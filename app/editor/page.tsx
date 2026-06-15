@@ -545,14 +545,26 @@ export default function EditorPage() {
             gap: 20px;
           }
           .top-buttons {
-            top: 15px;
-            left: 15px;
-            flex-direction: column;
-            gap: 8px;
+            position: relative;
+            top: 0;
+            left: 0;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: rgba(20, 25, 45, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 12px;
+            border-radius: 60px;
           }
           .nav-btn {
             padding: 6px 16px;
             font-size: 0.85rem;
+          }
+          .page-header {
+            margin-top: 0;
+            padding-top: 0;
+          }
+          .page-header h1 {
+            font-size: 1.8rem;
           }
         }
       `}</style>

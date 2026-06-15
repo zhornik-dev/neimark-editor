@@ -1242,20 +1242,28 @@ function TemplateEditorContent() {
 
         @media (max-width: 860px) {
           .container {
-            padding: 120px 20px 50px;
-          }
-          .toolbar {
-            top: 80px;
-            right: 20px;
-            left: 20px;
-            border-radius: 30px;
-            justify-content: center;
+            padding: 30px 16px 50px;
+            margin-top: 20px;
           }
           .nav-buttons {
-            top: 15px;
-            left: 15px;
-            flex-direction: column;
-            gap: 8px;
+            position: relative;
+            top: 0;
+            left: 0;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: rgba(20, 25, 45, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 12px;
+            border-radius: 60px;
+            flex-wrap: wrap;
+          }
+          .toolbar {
+            position: relative;
+            top: 0;
+            right: 0;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
           }
           .editable-content {
             padding: 20px;
