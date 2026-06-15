@@ -97,6 +97,7 @@ function TemplateEditorContent() {
   const [sendEmail, setSendEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [stats, setStats] = useState({ characters: 0, charactersNoSpaces: 0, words: 0 });
+  const [showMobileTools, setShowMobileTools] = useState(false);
 
   const updateStats = () => {
     if (!editableDivRef.current) return;
@@ -993,7 +994,7 @@ function TemplateEditorContent() {
           flex-wrap: wrap;
         }
 
-        .save-btn, .copy-btn, .reset-btn, .pdf-btn, .mobile-btn, .clear-btn, .send-btn {
+        .save-btn, .copy-btn, .reset-btn, .pdf-btn, .mobile-btn, .clear-btn, .send-btn, .toggle-tools-btn {
           border: none;
           color: white;
           padding: 6px 18px;
@@ -1076,6 +1077,15 @@ function TemplateEditorContent() {
         .send-btn:hover {
           background: rgba(50, 200, 100, 0.5);
           transform: scale(1.02);
+        }
+
+        .toggle-tools-btn {
+          background: rgba(108, 92, 231, 0.6);
+        }
+
+        .toggle-tools-btn:hover {
+          transform: scale(1.02);
+          background: rgba(108, 92, 231, 0.8);
         }
 
         .editable-content {
@@ -1242,44 +1252,131 @@ function TemplateEditorContent() {
 
         @media (max-width: 860px) {
           .container {
-            padding: 30px 16px 50px;
-            margin-top: 20px;
+            padding: 20px 12px 80px;
+            margin-top: 0;
           }
+          
           .nav-buttons {
             position: relative;
             top: 0;
             left: 0;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             background: rgba(20, 25, 45, 0.8);
             backdrop-filter: blur(12px);
-            padding: 12px;
-            border-radius: 60px;
+            padding: 8px 12px;
+            border-radius: 50px;
             flex-wrap: wrap;
+            gap: 8px;
           }
+          
+          .nav-btn {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+          }
+          
           .toolbar {
-            position: relative;
-            top: 0;
+            display: ${showMobileTools ? 'flex' : 'none'};
+            position: fixed;
+            bottom: 0;
+            left: 0;
             right: 0;
+            z-index: 100;
             justify-content: center;
-            margin-bottom: 20px;
+            gap: 6px;
+            background: rgba(20, 25, 45, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
             flex-wrap: wrap;
+            max-height: 40vh;
+            overflow-y: auto;
           }
+          
+          .toggle-tools-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 101;
+            border-radius: 50px;
+            padding: 8px 16px;
+            background: rgba(108, 92, 231, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+          }
+          
+          .tool-btn {
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            min-width: 32px;
+          }
+          
+          .tool-select {
+            padding: 5px 8px;
+            font-size: 0.7rem;
+            max-width: 80px;
+          }
+          
+          .color-input {
+            width: 28px;
+            height: 28px;
+          }
+          
+          .separator {
+            height: 20px;
+            margin: 0 2px;
+          }
+          
           .editable-content {
-            padding: 20px;
+            padding: 16px;
+            margin-bottom: 0;
           }
+          
+          .editor-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          
           .header-buttons {
             flex-direction: column;
             width: 100%;
+            gap: 8px;
           }
+          
           .save-btn, .copy-btn, .reset-btn, .pdf-btn, .mobile-btn, .clear-btn, .send-btn {
             width: 100%;
             text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
           }
+          
           .stats-bar {
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+          }
+          
+          .stat-item {
+            font-size: 0.75rem;
+          }
+          
+          .stat-value {
+            font-size: 0.9rem;
+          }
+          
+          .template-info-card {
+            padding: 10px;
+            margin-bottom: 10px;
+          }
+          
+          .template-info-card p {
+            font-size: 0.75rem;
+          }
+          
+          .badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
           }
         }
       `}</style>
@@ -1472,6 +1569,15 @@ function TemplateEditorContent() {
           <div className="badge">{currentTemplate?.badge || 'Новый'}</div>
         </div>
       </div>
+
+      {/* Кнопка переключения панели инструментов на мобильных */}
+      <button 
+        className="toggle-tools-btn"
+        onClick={() => setShowMobileTools(!showMobileTools)}
+        title={showMobileTools ? 'Скрыть панель инструментов' : 'Показать панель инструментов'}
+      >
+        ⚙️ Инструменты {showMobileTools ? '▲' : '▼'}
+      </button>
     </>
   );
 }
