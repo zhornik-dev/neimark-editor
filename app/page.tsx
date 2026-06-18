@@ -17,6 +17,7 @@ export default function Home() {
   ];
 
   useEffect(() => {
+    // Создание звёзд (250 штук)
     const starsContainer = starsRef.current;
     if (starsContainer) {
       starsContainer.innerHTML = '';
@@ -35,6 +36,7 @@ export default function Home() {
       }
     }
 
+    // Создание партиклов (35 штук)
     const particlesContainer = particlesRef.current;
     if (particlesContainer) {
       particlesContainer.innerHTML = '';
@@ -49,25 +51,25 @@ export default function Home() {
         const duration = Math.random() * 12 + 8;
         const delay = Math.random() * 15;
         particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-        const hue = Math.random() * 40 + 200;
-        particle.style.background = `radial-gradient(circle, rgba(${hue-30},${hue-100},255,0.5) 0%, rgba(${hue-20},${hue-80},200,0.2) 70%, transparent 100%)`;
+        // Меняем цвета частиц на сине-фиолетовые (вместо радужных)
+        const hue = Math.random() * 40 + 220; // 220-260 (сине-фиолетовый диапазон)
+        particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
         particlesContainer.appendChild(particle);
       }
     }
 
+    // Мышь интеракшн (градиент следует за курсором)
     const handleMouseMove = (e: MouseEvent) => {
       if (!gradientRef.current) return;
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
-      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, #19213f, #0a0f1e)`;
-      gradientRef.current.style.backgroundSize = '100% 100%';
+      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(40,50,80,0.6), rgba(10,10,20,1))`;
       gradientRef.current.style.transition = 'background 0.3s ease';
       
       clearTimeout((window as any).mouseTimeout);
       (window as any).mouseTimeout = setTimeout(() => {
         if (gradientRef.current) {
           gradientRef.current.style.background = '';
-          gradientRef.current.style.backgroundSize = '200% 200%';
           gradientRef.current.style.animation = 'auroraFlow 18s ease infinite';
         }
       }, 1500);
@@ -75,6 +77,7 @@ export default function Home() {
 
     document.addEventListener('mousemove', handleMouseMove);
     
+    // Рипл эффект при клике (белый с синим свечением)
     const handleClick = (e: MouseEvent) => {
       const ripple = document.createElement('div');
       ripple.style.position = 'fixed';
@@ -83,17 +86,17 @@ export default function Home() {
       ripple.style.width = '0px';
       ripple.style.height = '0px';
       ripple.style.borderRadius = '50%';
-      ripple.style.backgroundColor = 'rgba(180, 220, 255, 0.4)';
+      ripple.style.backgroundColor = 'rgba(100, 150, 255, 0.3)';
       ripple.style.transform = 'translate(-50%, -50%)';
       ripple.style.pointerEvents = 'none';
       ripple.style.zIndex = '100';
-      ripple.style.boxShadow = '0 0 30px rgba(120, 180, 255, 0.8)';
+      ripple.style.boxShadow = '0 0 40px rgba(80, 130, 255, 0.4)';
       ripple.style.transition = 'all 1s ease-out';
       document.body.appendChild(ripple);
       
       requestAnimationFrame(() => {
-        ripple.style.width = '200px';
-        ripple.style.height = '200px';
+        ripple.style.width = '300px';
+        ripple.style.height = '300px';
         ripple.style.opacity = '0';
       });
       
@@ -108,6 +111,7 @@ export default function Home() {
     };
   }, []);
 
+  // Ресайз
   useEffect(() => {
     const handleResize = () => {
       const container = particlesRef.current;
@@ -124,8 +128,8 @@ export default function Home() {
           const duration = Math.random() * 12 + 8;
           const delay = Math.random() * 15;
           particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-          const hue = Math.random() * 40 + 200;
-          particle.style.background = `radial-gradient(circle, rgba(${hue-30},${hue-100},255,0.5) 0%, rgba(${hue-20},${hue-80},200,0.2) 70%, transparent 100%)`;
+          const hue = Math.random() * 40 + 220;
+          particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
           container.appendChild(particle);
         }
       }
@@ -151,7 +155,7 @@ export default function Home() {
 
         body {
           min-height: 100vh;
-          background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050a);
+          background: #0a0a0f;
           overflow-x: hidden;
           position: relative;
           font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
@@ -164,11 +168,11 @@ export default function Home() {
           width: 100%;
           height: 100%;
           background: linear-gradient(125deg, 
-            #0b1120 0%, 
-            #1a1f35 25%, 
-            #2a1e3c 50%, 
-            #1f2a3e 75%, 
-            #0a0f1c 100%);
+            #0a0a12 0%, 
+            #12121f 25%, 
+            #1a1a2e 50%, 
+            #12121f 75%, 
+            #0a0a12 100%);
           background-size: 200% 200%;
           animation: auroraFlow 18s ease infinite;
           z-index: 0;
@@ -204,10 +208,10 @@ export default function Home() {
             opacity: 0;
           }
           10% {
-            opacity: 0.7;
+            opacity: 0.5;
           }
           90% {
-            opacity: 0.5;
+            opacity: 0.3;
           }
           100% {
             transform: translateY(-20vh) translateX(calc(var(--dx, 0) * 1px)) scale(0.6);
@@ -227,7 +231,7 @@ export default function Home() {
 
         .star {
           position: absolute;
-          background-color: white;
+          background-color: rgba(255,255,255,0.8);
           border-radius: 50%;
           opacity: 0;
           animation: twinkle 4s infinite alternate;
@@ -235,7 +239,7 @@ export default function Home() {
 
         @keyframes twinkle {
           0% { opacity: 0.1; transform: scale(1); }
-          100% { opacity: 1; transform: scale(1.2); }
+          100% { opacity: 0.9; transform: scale(1.2); }
         }
 
         .glow-overlay {
@@ -244,32 +248,9 @@ export default function Home() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: radial-gradient(ellipse at 70% 40%, rgba(80,120,200,0.15) 0%, rgba(0,0,0,0.4) 80%);
+          background: radial-gradient(ellipse at 70% 40%, rgba(60,80,150,0.08) 0%, rgba(0,0,0,0.6) 80%);
           z-index: 0;
           pointer-events: none;
-        }
-
-        .mist {
-          position: fixed;
-          top: -20%;
-          left: -20%;
-          width: 140%;
-          height: 140%;
-          background: repeating-linear-gradient( 
-            45deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 2px,
-            transparent 2px,
-            transparent 8px
-          );
-          animation: drift 60s linear infinite;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        @keyframes drift {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(5%, 5%) rotate(2deg); }
         }
 
         .hero-title {
@@ -281,28 +262,24 @@ export default function Home() {
         }
 
         .hero-title h1 {
-          font-size: clamp(1.8rem, 6vw, 3.5rem);
-          font-weight: 600;
-          background: linear-gradient(135deg, #ffffff, #a0c0ff, #c0a0ff);
-          background-size: 200% auto;
+          font-size: clamp(1.8rem, 6vw, 3.8rem);
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          text-shadow: 0 0 60px rgba(100, 150, 255, 0.15);
+        }
+
+        .hero-title h1 .accent {
+          background: linear-gradient(135deg, #6c8cff, #a78bfa);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          animation: titleShine 4s ease infinite;
-          text-shadow: 0 0 30px rgba(100, 150, 255, 0.3);
-          letter-spacing: -0.02em;
-        }
-
-        @keyframes titleShine {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
         }
 
         .hero-sub {
           margin-top: 1rem;
           font-size: clamp(0.85rem, 3vw, 1.1rem);
-          color: rgba(220, 230, 255, 0.7);
+          color: rgba(220, 230, 255, 0.6);
           font-weight: 400;
           letter-spacing: 0.3px;
         }
@@ -317,10 +294,10 @@ export default function Home() {
         }
 
         .steps-card {
-          background: rgba(20, 25, 45, 0.5);
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
           border-radius: 32px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           padding: 28px 24px;
           transition: all 0.3s ease;
         }
@@ -333,8 +310,8 @@ export default function Home() {
         .steps-title span {
           font-size: 1.1rem;
           font-weight: 600;
-          color: rgba(255, 255, 255, 0.9);
-          background: rgba(108, 92, 231, 0.4);
+          color: rgba(255, 255, 255, 0.8);
+          background: rgba(108, 92, 231, 0.2);
           padding: 6px 16px;
           border-radius: 40px;
           letter-spacing: 0.5px;
@@ -352,14 +329,16 @@ export default function Home() {
           min-width: 180px;
           text-align: center;
           padding: 16px 12px;
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.03);
           border-radius: 24px;
           transition: all 0.3s ease;
+          border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .step-item:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.06);
           transform: translateY(-3px);
+          border-color: rgba(108, 92, 231, 0.2);
         }
 
         .step-icon {
@@ -370,13 +349,13 @@ export default function Home() {
         .step-title {
           font-size: 1.1rem;
           font-weight: 600;
-          color: white;
+          color: rgba(255, 255, 255, 0.9);
           margin-bottom: 8px;
         }
 
         .step-desc {
           font-size: 0.8rem;
-          color: rgba(220, 230, 255, 0.7);
+          color: rgba(255, 255, 255, 0.5);
           line-height: 1.4;
         }
 
@@ -387,22 +366,18 @@ export default function Home() {
           margin-top: 20px;
           margin-bottom: 30px;
           pointer-events: auto;
-          display: flex;
-          justify-content: center;
-          gap: 20px;
-          flex-wrap: wrap;
         }
 
         .create-btn {
           display: inline-block;
           padding: 14px 42px;
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: 600;
           font-family: inherit;
           color: white;
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 60px;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -412,8 +387,8 @@ export default function Home() {
         }
 
         .create-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(108, 92, 231, 0.5);
           transform: scale(1.02);
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
@@ -433,11 +408,11 @@ export default function Home() {
           justify-content: center;
           gap: 10px;
           padding: 12px 28px;
-          background: rgba(0, 119, 255, 0.15);
+          background: rgba(0, 119, 255, 0.1);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(0, 119, 255, 0.4);
+          border: 1px solid rgba(0, 119, 255, 0.25);
           border-radius: 50px;
-          color: white;
+          color: rgba(255, 255, 255, 0.8);
           text-decoration: none;
           font-family: inherit;
           font-weight: 500;
@@ -447,15 +422,15 @@ export default function Home() {
         }
 
         .vk-link:hover {
-          background: rgba(0, 119, 255, 0.3);
-          border-color: rgba(0, 119, 255, 0.7);
+          background: rgba(0, 119, 255, 0.2);
+          border-color: rgba(0, 119, 255, 0.5);
           transform: scale(1.02);
         }
 
         .vk-icon {
           width: 24px;
           height: 24px;
-          fill: #ffffff;
+          fill: rgba(255,255,255,0.8);
         }
 
         .faq-container {
@@ -468,10 +443,10 @@ export default function Home() {
         }
 
         .faq-card {
-          background: rgba(20, 25, 45, 0.5);
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
           border-radius: 32px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           padding: 28px 24px;
         }
 
@@ -483,14 +458,14 @@ export default function Home() {
         .faq-title span {
           font-size: 1.1rem;
           font-weight: 600;
-          color: rgba(255, 255, 255, 0.9);
-          background: rgba(108, 92, 231, 0.4);
+          color: rgba(255, 255, 255, 0.8);
+          background: rgba(108, 92, 231, 0.2);
           padding: 6px 16px;
           border-radius: 40px;
         }
 
         .faq-item {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .faq-item:last-child {
@@ -507,7 +482,7 @@ export default function Home() {
         }
 
         .faq-question:hover {
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(255, 255, 255, 0.02);
           margin: 0 -10px;
           padding: 18px 10px;
           border-radius: 16px;
@@ -516,12 +491,12 @@ export default function Home() {
         .faq-question-text {
           font-size: 1rem;
           font-weight: 500;
-          color: white;
+          color: rgba(255, 255, 255, 0.85);
           padding-right: 20px;
         }
 
         .faq-icon {
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.4);
           font-size: 1.2rem;
           transition: transform 0.3s ease;
           min-width: 24px;
@@ -544,7 +519,7 @@ export default function Home() {
         }
 
         .faq-answer p {
-          color: rgba(220, 230, 255, 0.8);
+          color: rgba(255, 255, 255, 0.6);
           font-size: 0.9rem;
           line-height: 1.5;
         }
@@ -580,16 +555,13 @@ export default function Home() {
           .button-container {
             margin-top: 15px;
             margin-bottom: 20px;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
+          }
+          .faq-container {
+            margin: 0 auto 30px;
           }
           .create-btn {
             padding: 12px 32px;
             font-size: 1rem;
-          }
-          .faq-container {
-            margin: 0 auto 30px;
           }
           .faq-question-text {
             font-size: 0.9rem;
@@ -605,10 +577,11 @@ export default function Home() {
       <div className="stars" ref={starsRef}></div>
       <div className="particle-field" ref={particlesRef}></div>
       <div className="glow-overlay"></div>
-      <div className="mist"></div>
 
       <div className="hero-title">
-        <h1>НЕЙМАРК | Бесплатный конструктор email-шаблонов</h1>
+        <h1>
+          НЕЙМАРК <span className="accent">|</span> Бесплатный конструктор email-шаблонов
+        </h1>
         <div className="hero-sub">Создавайте письма, которые запоминаются</div>
       </div>
 

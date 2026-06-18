@@ -91,13 +91,19 @@ function TemplateEditorContent() {
   const [linkUrl, setLinkUrl] = useState('https://');
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState('https://');
-  const [mobilePreview, setMobilePreview] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendEmail, setSendEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [stats, setStats] = useState({ characters: 0, charactersNoSpaces: 0, words: 0 });
   const [showMobileTools, setShowMobileTools] = useState(false);
+  const [fontSize, setFontSize] = useState('16px');
+  const [showComponentMenu, setShowComponentMenu] = useState(false);
+  const [singleButtonColor, setSingleButtonColor] = useState('#4f46e5');
+  const [primaryButtonColor, setPrimaryButtonColor] = useState('#4f46e5');
+  const [secondaryButtonColor, setSecondaryButtonColor] = useState('#ffffff');
+  const [quoteColor, setQuoteColor] = useState('#6c5ce7');
+  const [dividerColor, setDividerColor] = useState('#d1d5db');
 
   const updateStats = () => {
     if (!editableDivRef.current) return;
@@ -143,15 +149,161 @@ function TemplateEditorContent() {
             padding: 50px 40px;
             background: ${bgGradient};
             color: ${textColor};
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+        .email-content * {
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .email-content h1 { font-size: 2rem; margin-bottom: 1rem; }
         .email-content h2 { font-size: 1.5rem; margin: 1.5rem 0 0.5rem; }
+        .email-content h3 { font-size: 1.17rem; margin: 1rem 0 0.5rem; }
         .email-content p { margin-bottom: 1rem; }
         .email-content img { max-width: 100%; border-radius: 16px; margin: 15px 0; }
         .email-content a { color: ${textColor}; text-decoration: underline; }
+        .email-content .btn-single {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            background: #4f46e5;
+            color: #ffffff !important;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+        .email-content .btn-single:hover {
+            filter: brightness(0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        .email-content .btn-two-container {
+            display: flex;
+            gap: 16px;
+            margin: 10px 0;
+        }
+        .email-content .btn-two-container .btn-two {
+            flex: 1;
+            box-sizing: border-box;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            cursor: pointer;
+        }
+        .email-content .btn-two-container .btn-two-primary {
+            background: #4f46e5;
+            color: #ffffff !important;
+            border: none;
+        }
+        .email-content .btn-two-container .btn-two-primary:hover {
+            filter: brightness(0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        .email-content .btn-two-container .btn-two-secondary {
+            background: #ffffff;
+            color: #111827 !important;
+            border: 1px solid #e5e7eb;
+        }
+        .email-content .btn-two-container .btn-two-secondary:hover {
+            background: #f9fafb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .email-content .hr {
+            margin-top: 16px;
+            margin-bottom: 16px;
+            border: none;
+            border-top: 2px solid #d1d5db;
+        }
+        .email-content .quote {
+            border-left: 4px solid #6c5ce7;
+            padding-left: 20px;
+            margin: 16px 0;
+            color: rgba(255,255,255,0.8);
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .email-content .features-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: 8px;
+        }
+        .email-content .features-heading {
+            font-size: 24px;
+            line-height: 32px;
+            margin-bottom: 42px;
+            text-align: center;
+            color: #1a1a2e;
+        }
+        .email-content .feature-section {
+            margin-bottom: 36px;
+        }
+        .email-content .feature-row {
+            padding-left: 12px;
+            padding-right: 32px;
+            display: flex;
+            gap: 18px;
+        }
+        .email-content .feature-number {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            background: #6c5ce7;
+            border-radius: 9999px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .email-content .feature-content {
+            flex: 1;
+        }
+        .email-content .feature-title {
+            font-size: 18px;
+            line-height: 28px;
+            margin-bottom: 8px;
+            margin-top: 0;
+            color: #1a1a2e;
+        }
+        .email-content .feature-description {
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0;
+            color: #6b7280;
+        }
         @media (max-width: 600px) {
             .email-content { padding: 30px 20px; }
             .email-content h1 { font-size: 1.5rem; }
+            .email-content .btn-two-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .email-content .features-container { padding: 16px; }
+            .email-content .feature-row { padding-right: 12px; }
         }
     </style>
 </head>
@@ -377,8 +529,8 @@ function TemplateEditorContent() {
         const duration = Math.random() * 12 + 8;
         const delay = Math.random() * 15;
         particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-        const hue = Math.random() * 40 + 200;
-        particle.style.background = `radial-gradient(circle, rgba(${hue-30},${hue-100},255,0.5) 0%, rgba(${hue-20},${hue-80},200,0.2) 70%, transparent 100%)`;
+        const hue = Math.random() * 40 + 220;
+        particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
         particlesContainer.appendChild(particle);
       }
     }
@@ -387,15 +539,13 @@ function TemplateEditorContent() {
       if (!gradientRef.current) return;
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
-      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, #19213f, #0a0f1e)`;
-      gradientRef.current.style.backgroundSize = '100% 100%';
+      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(40,50,80,0.6), rgba(10,10,20,1))`;
       gradientRef.current.style.transition = 'background 0.3s ease';
       
       clearTimeout((window as any).mouseTimeout);
       (window as any).mouseTimeout = setTimeout(() => {
         if (gradientRef.current) {
           gradientRef.current.style.background = '';
-          gradientRef.current.style.backgroundSize = '200% 200%';
           gradientRef.current.style.animation = 'auroraFlow 18s ease infinite';
         }
       }, 1500);
@@ -411,17 +561,17 @@ function TemplateEditorContent() {
       ripple.style.width = '0px';
       ripple.style.height = '0px';
       ripple.style.borderRadius = '50%';
-      ripple.style.backgroundColor = 'rgba(180, 220, 255, 0.4)';
+      ripple.style.backgroundColor = 'rgba(100, 150, 255, 0.3)';
       ripple.style.transform = 'translate(-50%, -50%)';
       ripple.style.pointerEvents = 'none';
       ripple.style.zIndex = '100';
-      ripple.style.boxShadow = '0 0 30px rgba(120, 180, 255, 0.8)';
+      ripple.style.boxShadow = '0 0 40px rgba(80, 130, 255, 0.4)';
       ripple.style.transition = 'all 1s ease-out';
       document.body.appendChild(ripple);
       
       requestAnimationFrame(() => {
-        ripple.style.width = '200px';
-        ripple.style.height = '200px';
+        ripple.style.width = '300px';
+        ripple.style.height = '300px';
         ripple.style.opacity = '0';
       });
       
@@ -482,20 +632,72 @@ function TemplateEditorContent() {
   };
 
   const execCommand = (command: string, value?: string) => {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) {
+      showMessagePopup('⚠️ Выделите текст для форматирования', true);
+      return;
+    }
+    
+    const selectedText = selection.toString().trim();
+    if (!selectedText) {
+      showMessagePopup('⚠️ Выделите текст для форматирования', true);
+      return;
+    }
+    
     document.execCommand(command, false, value);
     editableDivRef.current?.focus();
     setTimeout(() => updateStats(), 10);
   };
 
   const handleFontSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = e.target.value;
+    setFontSize(newSize);
+    
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
+    if (!selection || !selection.rangeCount) {
+      showMessagePopup('⚠️ Выделите текст для изменения размера', true);
+      return;
+    }
+    
+    const selectedText = selection.toString().trim();
+    if (!selectedText) {
+      showMessagePopup('⚠️ Выделите текст, чтобы изменить размер шрифта', true);
+      return;
+    }
+    
     const range = selection.getRangeAt(0);
-    const span = document.createElement('span');
-    span.style.fontSize = e.target.value;
-    range.surroundContents(span);
-    editableDivRef.current?.focus();
-    setTimeout(() => updateStats(), 10);
+    
+    try {
+      const span = document.createElement('span');
+      span.style.fontSize = newSize;
+      
+      const fragment = range.extractContents();
+      span.appendChild(fragment);
+      range.insertNode(span);
+      
+      range.setStartBefore(span);
+      range.setEndAfter(span);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      editableDivRef.current?.focus();
+      setTimeout(() => updateStats(), 10);
+    } catch (err) {
+      try {
+        document.execCommand('fontSize', false, '7');
+        const fonts = document.querySelectorAll('font[size="7"]');
+        fonts.forEach(el => {
+          const span = document.createElement('span');
+          span.style.fontSize = newSize;
+          span.innerHTML = el.innerHTML;
+          el.parentNode?.replaceChild(span, el);
+        });
+        editableDivRef.current?.focus();
+        setTimeout(() => updateStats(), 10);
+      } catch (e) {
+        showMessagePopup('❌ Не удалось изменить размер шрифта', true);
+      }
+    }
   };
 
   const insertAtCursor = (html: string) => {
@@ -514,6 +716,108 @@ function TemplateEditorContent() {
     }
     editableDivRef.current?.focus();
     setTimeout(() => updateStats(), 10);
+  };
+
+  const insertSingleButton = () => {
+    const html = `<a href="#" class="btn-single" style="background: ${singleButtonColor}; color: #ffffff !important;" contenteditable="true">Get started</a>`;
+    insertAtCursor(html);
+    setShowComponentMenu(false);
+  };
+
+  const insertTwoButtons = () => {
+    const html = `
+      <div class="btn-two-container">
+        <a href="#" class="btn-two btn-two-primary" style="background: ${primaryButtonColor}; color: #ffffff !important;" contenteditable="true">Login</a>
+        <a href="#" class="btn-two btn-two-secondary" style="background: ${secondaryButtonColor}; color: #111827 !important; border: 1px solid #e5e7eb;" contenteditable="true">Sign up</a>
+      </div>
+    `;
+    insertAtCursor(html);
+    setShowComponentMenu(false);
+  };
+
+  const insertDivider = () => {
+    const html = `
+      <p>Текст до разделителя</p>
+      <hr class="hr" style="border-top-color: ${dividerColor};" />
+      <p>Текст после разделителя</p>
+    `;
+    insertAtCursor(html);
+    setShowComponentMenu(false);
+  };
+
+  const insertQuote = () => {
+    const html = `
+      <blockquote class="quote" style="border-left-color: ${quoteColor};">
+        "Это пример цитаты. Здесь вы можете разместить вдохновляющую фразу или важную мысль."
+      </blockquote>
+    `;
+    insertAtCursor(html);
+    setShowComponentMenu(false);
+  };
+
+  const insertHeading = (type: string) => {
+    const headings: Record<string, string> = {
+      'h1': `<h1>H1 Title</h1>`,
+      'h2': `<h2>H2 Subtitle</h2>`,
+      'h3': `<h3>H3 Heading</h3>`
+    };
+    insertAtCursor(headings[type]);
+    setShowComponentMenu(false);
+  };
+
+  const insertSimpleList = () => {
+    const html = `
+      <div class="features-container">
+        <h2 class="features-heading">Топ 5 преимуществ нашего сервиса</h2>
+        <div class="feature-section">
+          <div class="feature-row">
+            <div class="feature-number">1</div>
+            <div class="feature-content">
+              <h3 class="feature-title">Инновационные решения</h3>
+              <p class="feature-description">Мы предлагаем инновационные решения, которые способствуют успеху и росту вашего бизнеса.</p>
+            </div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <div class="feature-row">
+            <div class="feature-number">2</div>
+            <div class="feature-content">
+              <h3 class="feature-title">Высокая производительность</h3>
+              <p class="feature-description">Наши сервисы обеспечивают высокое качество работы и эффективность на всех уровнях.</p>
+            </div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <div class="feature-row">
+            <div class="feature-number">3</div>
+            <div class="feature-content">
+              <h3 class="feature-title">Надежная поддержка</h3>
+              <p class="feature-description">Мы предоставляем надежную поддержку, чтобы ваша работа всегда была бесперебойной.</p>
+            </div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <div class="feature-row">
+            <div class="feature-number">4</div>
+            <div class="feature-content">
+              <h3 class="feature-title">Передовая безопасность</h3>
+              <p class="feature-description">Мы внедряем передовые меры безопасности для защиты ваших данных и активов.</p>
+            </div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <div class="feature-row">
+            <div class="feature-number">5</div>
+            <div class="feature-content">
+              <h3 class="feature-title">Масштабируемый рост</h3>
+              <p class="feature-description">Мы разрабатываем стратегии для устойчивого и масштабируемого роста вашего бизнеса.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    insertAtCursor(html);
+    setShowComponentMenu(false);
   };
 
   const handleLinkConfirm = () => {
@@ -653,12 +957,152 @@ function TemplateEditorContent() {
             padding: 50px 40px;
             background: ${bgGradient};
             color: ${textColor};
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+          }
+          .email-content * {
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
           }
           .email-content h1 { font-size: 2rem; margin-bottom: 1rem; }
           .email-content h2 { font-size: 1.5rem; margin: 1.5rem 0 0.5rem; }
+          .email-content h3 { font-size: 1.17rem; margin: 1rem 0 0.5rem; }
           .email-content p { margin-bottom: 1rem; }
           .email-content img { max-width: 100%; border-radius: 16px; margin: 15px 0; }
           .email-content a { color: ${textColor}; text-decoration: underline; }
+          .email-content .btn-single {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            background: #4f46e5;
+            color: #ffffff !important;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            border: none;
+            cursor: pointer;
+          }
+          .email-content .btn-single:hover {
+            filter: brightness(0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+          }
+          .email-content .btn-two-container {
+            display: flex;
+            gap: 16px;
+            margin: 10px 0;
+          }
+          .email-content .btn-two-container .btn-two {
+            flex: 1;
+            box-sizing: border-box;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            cursor: pointer;
+          }
+          .email-content .btn-two-container .btn-two-primary {
+            background: #4f46e5;
+            color: #ffffff !important;
+            border: none;
+          }
+          .email-content .btn-two-container .btn-two-primary:hover {
+            filter: brightness(0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+          }
+          .email-content .btn-two-container .btn-two-secondary {
+            background: #ffffff;
+            color: #111827 !important;
+            border: 1px solid #e5e7eb;
+          }
+          .email-content .btn-two-container .btn-two-secondary:hover {
+            background: #f9fafb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+          }
+          .email-content .hr {
+            margin-top: 16px;
+            margin-bottom: 16px;
+            border: none;
+            border-top: 2px solid #d1d5db;
+          }
+          .email-content .quote {
+            border-left: 4px solid #6c5ce7;
+            padding-left: 20px;
+            margin: 16px 0;
+            color: rgba(255,255,255,0.8);
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+          }
+          .email-content .features-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: 8px;
+          }
+          .email-content .features-heading {
+            font-size: 24px;
+            line-height: 32px;
+            margin-bottom: 42px;
+            text-align: center;
+            color: #1a1a2e;
+          }
+          .email-content .feature-section {
+            margin-bottom: 36px;
+          }
+          .email-content .feature-row {
+            padding-left: 12px;
+            padding-right: 32px;
+            display: flex;
+            gap: 18px;
+          }
+          .email-content .feature-number {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            background: #6c5ce7;
+            border-radius: 9999px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+          }
+          .email-content .feature-content {
+            flex: 1;
+          }
+          .email-content .feature-title {
+            font-size: 18px;
+            line-height: 28px;
+            margin-bottom: 8px;
+            margin-top: 0;
+            color: #1a1a2e;
+          }
+          .email-content .feature-description {
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0;
+            color: #6b7280;
+          }
           @media print {
             body { padding: 0; }
             .email-container { box-shadow: none; }
@@ -702,7 +1146,7 @@ function TemplateEditorContent() {
 
         body {
           min-height: 100vh;
-          background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050a);
+          background: #0a0a0f;
           font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
           overflow-x: hidden;
           position: relative;
@@ -715,11 +1159,11 @@ function TemplateEditorContent() {
           width: 100%;
           height: 100%;
           background: linear-gradient(125deg, 
-            #0b1120 0%, 
-            #1a1f35 25%, 
-            #2a1e3c 50%, 
-            #1f2a3e 75%, 
-            #0a0f1c 100%);
+            #0a0a12 0%, 
+            #12121f 25%, 
+            #1a1a2e 50%, 
+            #12121f 75%, 
+            #0a0a12 100%);
           background-size: 200% 200%;
           animation: auroraFlow 18s ease infinite;
           z-index: 0;
@@ -755,10 +1199,10 @@ function TemplateEditorContent() {
             opacity: 0;
           }
           10% {
-            opacity: 0.7;
+            opacity: 0.5;
           }
           90% {
-            opacity: 0.5;
+            opacity: 0.3;
           }
           100% {
             transform: translateY(-20vh) translateX(calc(var(--dx, 0) * 1px)) scale(0.6);
@@ -778,7 +1222,7 @@ function TemplateEditorContent() {
 
         .star {
           position: absolute;
-          background-color: white;
+          background-color: rgba(255,255,255,0.8);
           border-radius: 50%;
           opacity: 0;
           animation: twinkle 4s infinite alternate;
@@ -786,7 +1230,7 @@ function TemplateEditorContent() {
 
         @keyframes twinkle {
           0% { opacity: 0.1; transform: scale(1); }
-          100% { opacity: 1; transform: scale(1.2); }
+          100% { opacity: 0.9; transform: scale(1.2); }
         }
 
         .glow-overlay {
@@ -795,32 +1239,9 @@ function TemplateEditorContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: radial-gradient(ellipse at 70% 40%, rgba(80,120,200,0.15) 0%, rgba(0,0,0,0.4) 80%);
+          background: radial-gradient(ellipse at 70% 40%, rgba(60,80,150,0.08) 0%, rgba(0,0,0,0.6) 80%);
           z-index: 0;
           pointer-events: none;
-        }
-
-        .mist {
-          position: fixed;
-          top: -20%;
-          left: -20%;
-          width: 140%;
-          height: 140%;
-          background: repeating-linear-gradient( 
-            45deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 2px,
-            transparent 2px,
-            transparent 8px
-          );
-          animation: drift 60s linear infinite;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        @keyframes drift {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(5%, 5%) rotate(2deg); }
         }
 
         .nav-buttons {
@@ -838,11 +1259,11 @@ function TemplateEditorContent() {
           align-items: center;
           gap: 8px;
           padding: 10px 24px;
-          background: rgba(20, 25, 45, 0.6);
+          background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 50px;
-          color: white;
+          color: rgba(255, 255, 255, 0.7);
           text-decoration: none;
           font-family: inherit;
           font-weight: 500;
@@ -852,9 +1273,10 @@ function TemplateEditorContent() {
         }
 
         .nav-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.2);
           transform: translateX(-3px);
+          color: rgba(255, 255, 255, 0.9);
         }
 
         .toolbar {
@@ -865,18 +1287,18 @@ function TemplateEditorContent() {
           display: flex;
           flex-wrap: wrap;
           gap: 10px;
-          background: rgba(20, 25, 45, 0.7);
+          background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(12px);
           padding: 12px 20px;
           border-radius: 60px;
-          border: 1px solid rgba(255, 255, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           pointer-events: auto;
         }
 
         .tool-btn {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: white;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.7);
           padding: 8px 16px;
           border-radius: 40px;
           font-size: 0.85rem;
@@ -884,17 +1306,75 @@ function TemplateEditorContent() {
           cursor: pointer;
           transition: all 0.2s ease;
           font-family: inherit;
+          position: relative;
         }
 
         .tool-btn:hover {
-          background: rgba(255, 255, 255, 0.25);
+          background: rgba(255, 255, 255, 0.12);
           transform: scale(1.02);
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .tool-btn-dropdown {
+          position: relative;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background: rgba(15, 20, 35, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 16px;
+          padding: 10px;
+          min-width: 280px;
+          margin-top: 8px;
+          z-index: 100;
+          max-height: 400px;
+          overflow-y: auto;
+        }
+
+        .dropdown-menu-item {
+          display: block;
+          width: 100%;
+          text-align: left;
+          padding: 8px 16px;
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.8);
+          font-family: inherit;
+          font-size: 0.85rem;
+          cursor: pointer;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .dropdown-menu-item:hover {
+          background: rgba(255,255,255,0.08);
+          color: white;
+        }
+
+        .dropdown-menu-item .badge {
+          float: right;
+          font-size: 0.65rem;
+          opacity: 0.5;
+        }
+
+        .dropdown-menu-item .color-picker {
+          float: right;
+          width: 24px;
+          height: 24px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-left: 8px;
         }
 
         .tool-select {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: white;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.7);
           padding: 8px 12px;
           border-radius: 40px;
           font-size: 0.85rem;
@@ -906,22 +1386,22 @@ function TemplateEditorContent() {
 
         .tool-select option {
           background: #1a1f35;
-          color: white;
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .color-input {
           width: 40px;
           height: 36px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 12px;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
           cursor: pointer;
         }
 
         .separator {
           width: 1px;
           height: 30px;
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.1);
           margin: 0 5px;
         }
 
@@ -936,18 +1416,20 @@ function TemplateEditorContent() {
 
         .editor-area {
           border-radius: 32px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
           overflow: hidden;
           margin-bottom: 25px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .editor-header {
-          background: rgba(0, 0, 0, 0.2);
+          background: rgba(0, 0, 0, 0.3);
           backdrop-filter: blur(4px);
           padding: 12px 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           font-size: 0.8rem;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.6);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -956,7 +1438,7 @@ function TemplateEditorContent() {
         }
 
         .stats-bar {
-          background: rgba(20, 25, 45, 0.5);
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
           border-radius: 20px;
           padding: 12px 20px;
@@ -965,26 +1447,26 @@ function TemplateEditorContent() {
           justify-content: center;
           gap: 30px;
           flex-wrap: wrap;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .stat-item {
           display: flex;
           align-items: baseline;
           gap: 8px;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.6);
           font-size: 0.85rem;
         }
 
         .stat-label {
           font-weight: 500;
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .stat-value {
           font-weight: 700;
           font-size: 1.1rem;
-          color: #a0c0ff;
+          color: #6c8cff;
         }
 
         .header-buttons {
@@ -994,98 +1476,53 @@ function TemplateEditorContent() {
           flex-wrap: wrap;
         }
 
-        .save-btn, .copy-btn, .reset-btn, .pdf-btn, .mobile-btn, .clear-btn, .send-btn, .toggle-tools-btn {
+        .save-btn, .copy-btn, .reset-btn, .pdf-btn, .clear-btn, .send-btn, .toggle-tools-btn {
           border: none;
-          color: white;
+          color: rgba(255, 255, 255, 0.8);
           padding: 6px 18px;
           border-radius: 30px;
           cursor: pointer;
           font-weight: 600;
           font-size: 0.85rem;
           transition: all 0.2s;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .save-btn:hover, .copy-btn:hover, .reset-btn:hover, .pdf-btn:hover, .clear-btn:hover, .send-btn:hover, .toggle-tools-btn:hover {
+          transform: scale(1.02);
+          background: rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.95);
         }
 
         .save-btn {
-          background: linear-gradient(135deg, #6c5ce7, #a363d9);
-        }
-
-        .save-btn:hover {
-          transform: scale(1.02);
-          background: linear-gradient(135deg, #7d6ef7, #b574e9);
-        }
-
-        .copy-btn {
-          background: rgba(255, 255, 255, 0.2);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .copy-btn:hover {
-          background: rgba(255, 255, 255, 0.35);
-          transform: scale(1.02);
+          background: rgba(108, 92, 231, 0.3);
+          border-color: rgba(108, 92, 231, 0.3);
         }
 
         .reset-btn {
-          background: rgba(255, 100, 100, 0.3);
-          border: 1px solid rgba(255, 100, 100, 0.5);
-        }
-
-        .reset-btn:hover {
-          background: rgba(255, 100, 100, 0.5);
-          transform: scale(1.02);
+          background: rgba(255, 100, 100, 0.15);
+          border-color: rgba(255, 100, 100, 0.2);
         }
 
         .pdf-btn {
-          background: rgba(255, 150, 50, 0.3);
-          border: 1px solid rgba(255, 150, 50, 0.5);
-        }
-
-        .pdf-btn:hover {
-          background: rgba(255, 150, 50, 0.5);
-          transform: scale(1.02);
-        }
-
-        .mobile-btn {
-          background: rgba(50, 150, 255, 0.3);
-          border: 1px solid rgba(50, 150, 255, 0.5);
-        }
-
-        .mobile-btn.active {
-          background: rgba(50, 150, 255, 0.7);
-          border-color: rgba(50, 150, 255, 0.9);
-        }
-
-        .mobile-btn:hover {
-          background: rgba(50, 150, 255, 0.5);
-          transform: scale(1.02);
+          background: rgba(255, 150, 50, 0.15);
+          border-color: rgba(255, 150, 50, 0.2);
         }
 
         .clear-btn {
-          background: rgba(200, 50, 50, 0.3);
-          border: 1px solid rgba(200, 50, 50, 0.5);
-        }
-
-        .clear-btn:hover {
-          background: rgba(200, 50, 50, 0.5);
-          transform: scale(1.02);
+          background: rgba(200, 50, 50, 0.15);
+          border-color: rgba(200, 50, 50, 0.2);
         }
 
         .send-btn {
-          background: rgba(50, 200, 100, 0.3);
-          border: 1px solid rgba(50, 200, 100, 0.5);
-        }
-
-        .send-btn:hover {
-          background: rgba(50, 200, 100, 0.5);
-          transform: scale(1.02);
+          background: rgba(50, 200, 100, 0.15);
+          border-color: rgba(50, 200, 100, 0.2);
         }
 
         .toggle-tools-btn {
-          background: rgba(108, 92, 231, 0.6);
-        }
-
-        .toggle-tools-btn:hover {
-          transform: scale(1.02);
-          background: rgba(108, 92, 231, 0.8);
+          background: rgba(108, 92, 231, 0.2);
+          border-color: rgba(108, 92, 231, 0.2);
         }
 
         .editable-content {
@@ -1095,44 +1532,176 @@ function TemplateEditorContent() {
           font-size: 16px;
           line-height: 1.5;
           transition: all 0.3s ease;
+          background: rgba(255, 255, 255, 0.05);
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          max-width: 100%;
         }
 
-        .editable-content.mobile {
-          max-width: 375px;
-          margin: 0 auto;
-          box-shadow: 0 0 0 1px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.3);
+        .editable-content * {
+          max-width: 100%;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .editable-content:focus {
-          box-shadow: inset 0 0 0 3px rgba(108, 92, 231, 0.3);
+          box-shadow: inset 0 0 0 3px rgba(108, 92, 231, 0.2);
         }
 
-        .editable-content h1 { font-size: 2rem; margin: 0 0 0.5rem; }
-        .editable-content h2 { font-size: 1.5rem; margin: 0 0 0.5rem; }
-        .editable-content p { margin: 0 0 1rem; }
-        .editable-content img { max-width: 100%; border-radius: 12px; margin: 10px 0; }
+        .editable-content .btn-single {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px;
+          border-radius: 8px;
+          text-align: center;
+          font-weight: 600;
+          text-decoration: none;
+          background: #4f46e5;
+          color: #ffffff !important;
+          margin: 10px 0;
+          transition: all 0.3s ease;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          max-width: 100%;
+          border: none;
+          cursor: pointer;
+        }
+        .editable-content .btn-single:hover {
+          filter: brightness(0.9);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        .editable-content .btn-two-container {
+          display: flex;
+          gap: 16px;
+          margin: 10px 0;
+        }
+        .editable-content .btn-two-container .btn-two {
+          flex: 1;
+          box-sizing: border-box;
+          padding: 12px 20px;
+          border-radius: 8px;
+          text-align: center;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          max-width: 100%;
+          cursor: pointer;
+        }
+        .editable-content .btn-two-container .btn-two-primary {
+          background: #4f46e5;
+          color: #ffffff !important;
+          border: none;
+        }
+        .editable-content .btn-two-container .btn-two-primary:hover {
+          filter: brightness(0.9);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        .editable-content .btn-two-container .btn-two-secondary {
+          background: #ffffff;
+          color: #111827 !important;
+          border: 1px solid #e5e7eb;
+        }
+        .editable-content .btn-two-container .btn-two-secondary:hover {
+          background: #f9fafb;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .editable-content .hr {
+          margin-top: 16px;
+          margin-bottom: 16px;
+          border: none;
+          border-top: 2px solid #d1d5db;
+        }
+        .editable-content .quote {
+          border-left: 4px solid #6c5ce7;
+          padding-left: 20px;
+          margin: 16px 0;
+          color: rgba(255,255,255,0.8);
+          font-style: italic;
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+        .editable-content .features-container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 24px;
+          background: #ffffff;
+          border-radius: 8px;
+        }
+        .editable-content .features-heading {
+          font-size: 24px;
+          line-height: 32px;
+          margin-bottom: 42px;
+          text-align: center;
+          color: #1a1a2e;
+        }
+        .editable-content .feature-section {
+          margin-bottom: 36px;
+        }
+        .editable-content .feature-row {
+          padding-left: 12px;
+          padding-right: 32px;
+          display: flex;
+          gap: 18px;
+        }
+        .editable-content .feature-number {
+          width: 24px;
+          height: 24px;
+          min-width: 24px;
+          background: #6c5ce7;
+          border-radius: 9999px;
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+        }
+        .editable-content .feature-content {
+          flex: 1;
+        }
+        .editable-content .feature-title {
+          font-size: 18px;
+          line-height: 28px;
+          margin-bottom: 8px;
+          margin-top: 0;
+          color: #1a1a2e;
+        }
+        .editable-content .feature-description {
+          font-size: 14px;
+          line-height: 24px;
+          margin: 0;
+          color: #6b7280;
+        }
 
         .template-info-card {
-          background: rgba(20, 25, 45, 0.5);
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
           border-radius: 20px;
           padding: 15px 20px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           text-align: center;
         }
 
         .template-info-card p {
-          color: rgba(220, 230, 255, 0.8);
+          color: rgba(220, 230, 255, 0.5);
           font-size: 0.85rem;
         }
 
         .badge {
           display: inline-block;
           padding: 4px 12px;
-          background: rgba(108, 92, 231, 0.6);
+          background: rgba(108, 92, 231, 0.3);
           border-radius: 50px;
           font-size: 0.75rem;
           margin-top: 5px;
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .custom-alert {
@@ -1152,11 +1721,11 @@ function TemplateEditorContent() {
         }
 
         .custom-alert.success {
-          border: 1px solid rgba(100, 255, 100, 0.5);
+          border: 1px solid rgba(100, 255, 100, 0.3);
         }
 
         .custom-alert.error {
-          border: 1px solid rgba(255, 100, 100, 0.5);
+          border: 1px solid rgba(255, 100, 100, 0.3);
         }
 
         @keyframes fadeInOut {
@@ -1172,7 +1741,7 @@ function TemplateEditorContent() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(15px);
           z-index: 2000;
           display: flex;
@@ -1187,7 +1756,7 @@ function TemplateEditorContent() {
           max-width: 450px;
           width: 90%;
           padding: 28px;
-          border: 1px solid rgba(255,255,255,0.3);
+          border: 1px solid rgba(255,255,255,0.15);
           text-align: center;
         }
 
@@ -1198,7 +1767,7 @@ function TemplateEditorContent() {
         }
 
         .modal-content p {
-          color: rgba(255,255,255,0.8);
+          color: rgba(255,255,255,0.7);
           margin-bottom: 24px;
         }
 
@@ -1206,8 +1775,8 @@ function TemplateEditorContent() {
           width: 100%;
           padding: 12px 16px;
           border-radius: 16px;
-          border: 1px solid rgba(255,255,255,0.3);
-          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.05);
           color: white;
           font-size: 1rem;
           margin-bottom: 24px;
@@ -1240,9 +1809,9 @@ function TemplateEditorContent() {
         }
 
         .modal-btn.cancel {
-          background: rgba(255,255,255,0.2);
-          color: white;
-          border: 1px solid rgba(255,255,255,0.3);
+          background: rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.7);
+          border: 1px solid rgba(255,255,255,0.15);
         }
 
         .modal-btn.confirm:hover {
@@ -1262,7 +1831,7 @@ function TemplateEditorContent() {
             left: 0;
             justify-content: center;
             margin-bottom: 16px;
-            background: rgba(20, 25, 45, 0.8);
+            background: rgba(20, 25, 45, 0.6);
             backdrop-filter: blur(12px);
             padding: 8px 12px;
             border-radius: 50px;
@@ -1284,10 +1853,10 @@ function TemplateEditorContent() {
             z-index: 100;
             justify-content: center;
             gap: 6px;
-            background: rgba(20, 25, 45, 0.95);
+            background: rgba(10, 10, 20, 0.95);
             backdrop-filter: blur(12px);
             padding: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             flex-wrap: wrap;
             max-height: 40vh;
             overflow-y: auto;
@@ -1300,7 +1869,9 @@ function TemplateEditorContent() {
             z-index: 101;
             border-radius: 50px;
             padding: 8px 16px;
-            background: rgba(108, 92, 231, 0.9);
+            background: rgba(108, 92, 231, 0.6);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
           }
           
@@ -1342,7 +1913,7 @@ function TemplateEditorContent() {
             gap: 8px;
           }
           
-          .save-btn, .copy-btn, .reset-btn, .pdf-btn, .mobile-btn, .clear-btn, .send-btn {
+          .save-btn, .copy-btn, .reset-btn, .pdf-btn, .clear-btn, .send-btn {
             width: 100%;
             text-align: center;
             padding: 8px;
@@ -1377,6 +1948,16 @@ function TemplateEditorContent() {
           .badge {
             font-size: 0.65rem;
             padding: 2px 8px;
+          }
+
+          .dropdown-menu {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            right: 10px;
+            top: auto;
+            max-height: 50vh;
+            min-width: auto;
           }
         }
       `}</style>
@@ -1433,7 +2014,7 @@ function TemplateEditorContent() {
           <h3>✉️ Отправить письмо</h3>
           <input
             type="email"
-            placeholder="example@mail.com"
+            placeholder="example@gmail.com"
             value={sendEmail}
             onChange={(e) => setSendEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendEmail()}
@@ -1461,7 +2042,6 @@ function TemplateEditorContent() {
       <div className="stars" ref={starsRef}></div>
       <div className="particle-field" ref={particlesRef}></div>
       <div className="glow-overlay"></div>
-      <div className="mist"></div>
 
       <div className="nav-buttons">
         <Link href="/" className="nav-btn" title="На главную">← На главную</Link>
@@ -1484,7 +2064,8 @@ function TemplateEditorContent() {
           <option value="Verdana">Verdana</option>
         </select>
         
-        <select onChange={handleFontSizeChange} className="tool-select" defaultValue="16px" title="Размер шрифта">
+        <select onChange={handleFontSizeChange} value={fontSize} className="tool-select" title="Размер шрифта">
+          <option value="8px">8px</option>
           <option value="10px">10px</option>
           <option value="12px">12px</option>
           <option value="14px">14px</option>
@@ -1492,8 +2073,13 @@ function TemplateEditorContent() {
           <option value="18px">18px</option>
           <option value="20px">20px</option>
           <option value="24px">24px</option>
+          <option value="28px">28px</option>
           <option value="32px">32px</option>
+          <option value="36px">36px</option>
+          <option value="40px">40px</option>
           <option value="48px">48px</option>
+          <option value="56px">56px</option>
+          <option value="64px">64px</option>
         </select>
         
         <div className="separator"></div>
@@ -1502,6 +2088,92 @@ function TemplateEditorContent() {
         <button className="tool-btn" onClick={() => execCommand('justifyCenter')} title="Выровнять по центру">▲</button>
         <button className="tool-btn" onClick={() => execCommand('justifyRight')} title="Выровнять по правому краю">▶</button>
         <button className="tool-btn" onClick={() => execCommand('justifyFull')} title="Выровнять по ширине">■</button>
+        
+        <div className="separator"></div>
+
+        <div className="tool-btn-dropdown">
+          <button className="tool-btn" onClick={() => setShowComponentMenu(!showComponentMenu)} title="Components">
+            🧩 Components ▼
+          </button>
+          {showComponentMenu && (
+            <div className="dropdown-menu">
+              <div style={{ padding: '8px 16px', color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Buttons</div>
+              <button className="dropdown-menu-item" onClick={insertSingleButton}>
+                🔘 Single Button
+                <input 
+                  type="color" 
+                  value={singleButtonColor}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setSingleButtonColor(e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="color-picker"
+                />
+              </button>
+              <button className="dropdown-menu-item" onClick={insertTwoButtons}>
+                🔘🔘 Two Buttons
+                <input 
+                  type="color" 
+                  value={primaryButtonColor}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setPrimaryButtonColor(e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="color-picker"
+                  style={{ marginLeft: '4px' }}
+                />
+                <input 
+                  type="color" 
+                  value={secondaryButtonColor}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setSecondaryButtonColor(e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="color-picker"
+                />
+              </button>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '8px 16px' }}></div>
+              <div style={{ padding: '8px 16px', color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Headings</div>
+              <button className="dropdown-menu-item" onClick={() => insertHeading('h1')}>📌 H1 Title</button>
+              <button className="dropdown-menu-item" onClick={() => insertHeading('h2')}>📌 H2 Subtitle</button>
+              <button className="dropdown-menu-item" onClick={() => insertHeading('h3')}>📌 H3 Heading</button>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '8px 16px' }}></div>
+              <div style={{ padding: '8px 16px', color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>LAYOUTS</div>
+              <button className="dropdown-menu-item" onClick={insertDivider}>
+                ➖ Divider
+                <input 
+                  type="color" 
+                  value={dividerColor}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setDividerColor(e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="color-picker"
+                />
+              </button>
+              <button className="dropdown-menu-item" onClick={insertQuote}>
+                💬 Quote
+                <input 
+                  type="color" 
+                  value={quoteColor}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setQuoteColor(e.target.value);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="color-picker"
+                />
+              </button>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '8px 16px' }}></div>
+              <div style={{ padding: '8px 16px', color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>LISTS</div>
+              <button className="dropdown-menu-item" onClick={insertSimpleList}>📋 Simple List</button>
+            </div>
+          )}
+        </div>
         
         <div className="separator"></div>
         
@@ -1530,9 +2202,6 @@ function TemplateEditorContent() {
             <span>✏️ НЕЙМАРК | Редактируемая область (кликните для ввода текста)</span>
             <div className="header-buttons">
               <button className="copy-btn" onClick={handleCopy} title="Скопировать HTML">📋 Скопировать HTML</button>
-              <button className={`mobile-btn ${mobilePreview ? 'active' : ''}`} onClick={() => setMobilePreview(!mobilePreview)} title="Мобильный предпросмотр">
-                📱 {mobilePreview ? 'Отключить' : 'Мобильный'} предпросмотр
-              </button>
               <button className="pdf-btn" onClick={handleExportPDF} title="Сохранить как PDF">📄 Сохранить как PDF</button>
               <button className="send-btn" onClick={() => setShowSendModal(true)} title="Отправить письмо на email">✉️ Отправить письмо</button>
               <button className="reset-btn" onClick={resetToOriginal} title="Сбросить к исходному шаблону">🔄 Сбросить</button>
@@ -1542,7 +2211,7 @@ function TemplateEditorContent() {
           </div>
           <div 
             ref={editableDivRef} 
-            className={`editable-content ${mobilePreview ? 'mobile' : ''}`} 
+            className="editable-content" 
             contentEditable 
             suppressContentEditableWarning 
           />
@@ -1570,7 +2239,6 @@ function TemplateEditorContent() {
         </div>
       </div>
 
-      {/* Кнопка переключения панели инструментов на мобильных */}
       <button 
         className="toggle-tools-btn"
         onClick={() => setShowMobileTools(!showMobileTools)}
@@ -1584,7 +2252,7 @@ function TemplateEditorContent() {
 
 export default function TemplateEditorPage() {
   return (
-    <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'white' }}>Загрузка редактора...</div>}>
+    <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Загрузка редактора...</div>}>
       <TemplateEditorContent />
     </Suspense>
   );

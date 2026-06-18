@@ -30,6 +30,7 @@ export default function EditorPage() {
   const [modalTemplate, setModalTemplate] = useState<Template | null>(null);
 
   useEffect(() => {
+    // Создание звёзд
     const starsContainer = starsRef.current;
     if (starsContainer) {
       starsContainer.innerHTML = '';
@@ -48,6 +49,7 @@ export default function EditorPage() {
       }
     }
 
+    // Создание партиклов
     const particlesContainer = particlesRef.current;
     if (particlesContainer) {
       particlesContainer.innerHTML = '';
@@ -62,25 +64,24 @@ export default function EditorPage() {
         const duration = Math.random() * 12 + 8;
         const delay = Math.random() * 15;
         particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-        const hue = Math.random() * 40 + 200;
-        particle.style.background = `radial-gradient(circle, rgba(${hue-30},${hue-100},255,0.5) 0%, rgba(${hue-20},${hue-80},200,0.2) 70%, transparent 100%)`;
+        const hue = Math.random() * 40 + 220;
+        particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
         particlesContainer.appendChild(particle);
       }
     }
 
+    // Мышь интеракшн
     const handleMouseMove = (e: MouseEvent) => {
       if (!gradientRef.current) return;
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
-      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, #19213f, #0a0f1e)`;
-      gradientRef.current.style.backgroundSize = '100% 100%';
+      gradientRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(40,50,80,0.6), rgba(10,10,20,1))`;
       gradientRef.current.style.transition = 'background 0.3s ease';
       
       clearTimeout((window as any).mouseTimeout);
       (window as any).mouseTimeout = setTimeout(() => {
         if (gradientRef.current) {
           gradientRef.current.style.background = '';
-          gradientRef.current.style.backgroundSize = '200% 200%';
           gradientRef.current.style.animation = 'auroraFlow 18s ease infinite';
         }
       }, 1500);
@@ -88,6 +89,7 @@ export default function EditorPage() {
 
     document.addEventListener('mousemove', handleMouseMove);
     
+    // Рипл эффект при клике
     const handleClick = (e: MouseEvent) => {
       const ripple = document.createElement('div');
       ripple.style.position = 'fixed';
@@ -96,17 +98,17 @@ export default function EditorPage() {
       ripple.style.width = '0px';
       ripple.style.height = '0px';
       ripple.style.borderRadius = '50%';
-      ripple.style.backgroundColor = 'rgba(180, 220, 255, 0.4)';
+      ripple.style.backgroundColor = 'rgba(100, 150, 255, 0.3)';
       ripple.style.transform = 'translate(-50%, -50%)';
       ripple.style.pointerEvents = 'none';
       ripple.style.zIndex = '100';
-      ripple.style.boxShadow = '0 0 30px rgba(120, 180, 255, 0.8)';
+      ripple.style.boxShadow = '0 0 40px rgba(80, 130, 255, 0.4)';
       ripple.style.transition = 'all 1s ease-out';
       document.body.appendChild(ripple);
       
       requestAnimationFrame(() => {
-        ripple.style.width = '200px';
-        ripple.style.height = '200px';
+        ripple.style.width = '300px';
+        ripple.style.height = '300px';
         ripple.style.opacity = '0';
       });
       
@@ -121,6 +123,7 @@ export default function EditorPage() {
     };
   }, []);
 
+  // Ресайз
   useEffect(() => {
     const handleResize = () => {
       const container = particlesRef.current;
@@ -137,8 +140,8 @@ export default function EditorPage() {
           const duration = Math.random() * 12 + 8;
           const delay = Math.random() * 15;
           particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-          const hue = Math.random() * 40 + 200;
-          particle.style.background = `radial-gradient(circle, rgba(${hue-30},${hue-100},255,0.5) 0%, rgba(${hue-20},${hue-80},200,0.2) 70%, transparent 100%)`;
+          const hue = Math.random() * 40 + 220;
+          particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
           container.appendChild(particle);
         }
       }
@@ -179,7 +182,7 @@ export default function EditorPage() {
 
         body {
           min-height: 100vh;
-          background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050a);
+          background: #0a0a0f;
           font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
           overflow-x: hidden;
           position: relative;
@@ -192,11 +195,11 @@ export default function EditorPage() {
           width: 100%;
           height: 100%;
           background: linear-gradient(125deg, 
-            #0b1120 0%, 
-            #1a1f35 25%, 
-            #2a1e3c 50%, 
-            #1f2a3e 75%, 
-            #0a0f1c 100%);
+            #0a0a12 0%, 
+            #12121f 25%, 
+            #1a1a2e 50%, 
+            #12121f 75%, 
+            #0a0a12 100%);
           background-size: 200% 200%;
           animation: auroraFlow 18s ease infinite;
           z-index: 0;
@@ -232,10 +235,10 @@ export default function EditorPage() {
             opacity: 0;
           }
           10% {
-            opacity: 0.7;
+            opacity: 0.5;
           }
           90% {
-            opacity: 0.5;
+            opacity: 0.3;
           }
           100% {
             transform: translateY(-20vh) translateX(calc(var(--dx, 0) * 1px)) scale(0.6);
@@ -255,7 +258,7 @@ export default function EditorPage() {
 
         .star {
           position: absolute;
-          background-color: white;
+          background-color: rgba(255,255,255,0.8);
           border-radius: 50%;
           opacity: 0;
           animation: twinkle 4s infinite alternate;
@@ -263,7 +266,7 @@ export default function EditorPage() {
 
         @keyframes twinkle {
           0% { opacity: 0.1; transform: scale(1); }
-          100% { opacity: 1; transform: scale(1.2); }
+          100% { opacity: 0.9; transform: scale(1.2); }
         }
 
         .glow-overlay {
@@ -272,32 +275,9 @@ export default function EditorPage() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: radial-gradient(ellipse at 70% 40%, rgba(80,120,200,0.15) 0%, rgba(0,0,0,0.4) 80%);
+          background: radial-gradient(ellipse at 70% 40%, rgba(60,80,150,0.08) 0%, rgba(0,0,0,0.6) 80%);
           z-index: 0;
           pointer-events: none;
-        }
-
-        .mist {
-          position: fixed;
-          top: -20%;
-          left: -20%;
-          width: 140%;
-          height: 140%;
-          background: repeating-linear-gradient( 
-            45deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 2px,
-            transparent 2px,
-            transparent 8px
-          );
-          animation: drift 60s linear infinite;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        @keyframes drift {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(5%, 5%) rotate(2deg); }
         }
 
         .top-buttons {
@@ -315,11 +295,11 @@ export default function EditorPage() {
           align-items: center;
           gap: 8px;
           padding: 10px 24px;
-          background: rgba(20, 25, 45, 0.6);
+          background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 50px;
-          color: white;
+          color: rgba(255, 255, 255, 0.7);
           text-decoration: none;
           font-family: inherit;
           font-weight: 500;
@@ -329,9 +309,10 @@ export default function EditorPage() {
         }
 
         .nav-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.2);
           transform: translateX(-3px);
+          color: rgba(255, 255, 255, 0.9);
         }
 
         .container {
@@ -350,16 +331,20 @@ export default function EditorPage() {
 
         .page-header h1 {
           font-size: clamp(2rem, 5vw, 3rem);
-          background: linear-gradient(135deg, #fff, #a0c0ff, #e0c0ff);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          font-weight: 600;
+          font-weight: 700;
+          color: #ffffff;
           letter-spacing: -0.02em;
         }
 
+        .page-header h1 .accent {
+          background: linear-gradient(135deg, #6c8cff, #a78bfa);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
         .page-header p {
-          color: rgba(220, 230, 255, 0.7);
+          color: rgba(220, 230, 255, 0.5);
           margin-top: 12px;
           font-size: 1.1rem;
         }
@@ -371,10 +356,10 @@ export default function EditorPage() {
         }
 
         .template-card {
-          background: rgba(20, 25, 45, 0.5);
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
           border-radius: 28px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           overflow: hidden;
           transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
           cursor: pointer;
@@ -383,9 +368,9 @@ export default function EditorPage() {
 
         .template-card:hover {
           transform: translateY(-8px) scale(1.02);
-          border-color: rgba(255, 255, 255, 0.5);
+          border-color: rgba(108, 92, 231, 0.4);
           box-shadow: 0 20px 35px rgba(0, 0, 0, 0.4);
-          background: rgba(30, 35, 60, 0.6);
+          background: rgba(255, 255, 255, 0.06);
         }
 
         .template-preview {
@@ -394,7 +379,7 @@ export default function EditorPage() {
           background-position: center;
           background-repeat: no-repeat;
           position: relative;
-          border-bottom: 1px solid rgba(255,255,255,0.1);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
         .template-badge {
@@ -406,7 +391,7 @@ export default function EditorPage() {
           padding: 4px 12px;
           border-radius: 30px;
           font-size: 0.75rem;
-          color: #fff;
+          color: rgba(255,255,255,0.8);
           font-weight: 500;
         }
 
@@ -415,23 +400,23 @@ export default function EditorPage() {
         }
 
         .template-info h3 {
-          color: white;
+          color: rgba(255, 255, 255, 0.9);
           font-size: 1.5rem;
           font-weight: 600;
           margin-bottom: 8px;
         }
 
         .template-info p {
-          color: rgba(200, 210, 255, 0.7);
+          color: rgba(255, 255, 255, 0.5);
           font-size: 0.9rem;
           line-height: 1.4;
           margin-bottom: 20px;
         }
 
         .select-btn {
-          background: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          color: white;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.8);
           padding: 10px 20px;
           border-radius: 40px;
           font-size: 0.9rem;
@@ -444,9 +429,10 @@ export default function EditorPage() {
         }
 
         .select-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          border-color: rgba(255, 255, 255, 0.6);
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(108, 92, 231, 0.4);
           transform: scale(0.98);
+          color: rgba(255, 255, 255, 0.95);
         }
 
         .modal {
@@ -456,7 +442,7 @@ export default function EditorPage() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(15px);
           z-index: 1000;
           justify-content: center;
@@ -471,7 +457,7 @@ export default function EditorPage() {
           max-width: 500px;
           width: 90%;
           padding: 30px;
-          border: 1px solid rgba(255,255,255,0.3);
+          border: 1px solid rgba(255,255,255,0.15);
           text-align: center;
           animation: modalFadeIn 0.3s ease;
         }
@@ -500,7 +486,7 @@ export default function EditorPage() {
           background-position: center;
           border-radius: 24px;
           margin: 20px 0;
-          border: 1px solid rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.15);
         }
 
         .modal-actions {
@@ -526,9 +512,9 @@ export default function EditorPage() {
         }
 
         .modal-btn.cancel {
-          background: rgba(255,255,255,0.2);
-          color: white;
-          border: 1px solid rgba(255,255,255,0.3);
+          background: rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.8);
+          border: 1px solid rgba(255,255,255,0.2);
         }
 
         .modal-btn.confirm:hover {
@@ -550,7 +536,7 @@ export default function EditorPage() {
             left: 0;
             justify-content: center;
             margin-bottom: 20px;
-            background: rgba(20, 25, 45, 0.8);
+            background: rgba(20, 25, 45, 0.6);
             backdrop-filter: blur(12px);
             padding: 12px;
             border-radius: 60px;
@@ -573,7 +559,6 @@ export default function EditorPage() {
       <div className="stars" ref={starsRef}></div>
       <div className="particle-field" ref={particlesRef}></div>
       <div className="glow-overlay"></div>
-      <div className="mist"></div>
 
       <div className="top-buttons">
         <Link href="/" className="nav-btn" title="На главную">← На главную</Link>
@@ -582,7 +567,9 @@ export default function EditorPage() {
 
       <div className="container">
         <div className="page-header">
-          <h1>НЕЙМАРК | Шедевры email-дизайна</h1>
+          <h1>
+            НЕЙМАРК <span className="accent">|</span> Шедевры email-дизайна
+          </h1>
           <p>Выберите шаблон — и создайте идеальное письмо</p>
         </div>
 
@@ -608,7 +595,7 @@ export default function EditorPage() {
         <div className="modal-content">
           <h3>{modalTemplate?.name}</h3>
           <div className="modal-preview-img" style={{ background: modalTemplate?.previewBg }}></div>
-          <p style={{ color: '#ccc' }}>{modalTemplate?.desc}</p>
+          <p style={{ color: 'rgba(255,255,255,0.7)' }}>{modalTemplate?.desc}</p>
           <div className="modal-actions">
             <button className="modal-btn cancel" onClick={closeModal}>Отмена</button>
             <button className="modal-btn confirm" onClick={confirmSelect}>Редактировать</button>
