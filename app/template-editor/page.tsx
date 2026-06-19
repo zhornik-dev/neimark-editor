@@ -81,7 +81,6 @@ function TemplateEditorContent() {
   const particlesRef = useRef<HTMLDivElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
   const editableDivRef = useRef<HTMLDivElement>(null);
-  const savedRangeRef = useRef<Range | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [currentTemplate, setCurrentTemplate] = useState<TemplateData | null>(null);
   const [originalTemplate, setOriginalTemplate] = useState<TemplateData | null>(null);
@@ -105,12 +104,10 @@ function TemplateEditorContent() {
   const [quoteColor, setQuoteColor] = useState('#6c5ce7');
   const [dividerColor, setDividerColor] = useState('#d1d5db');
 
-  // История изменений для Undo/Redo
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isUndoRedoAction, setIsUndoRedoAction] = useState<boolean>(false);
 
-  // Сохранение состояния в историю
   const saveToHistory = () => {
     if (!editableDivRef.current) return;
     if (isUndoRedoAction) {
@@ -120,16 +117,13 @@ function TemplateEditorContent() {
     
     const currentContent = editableDivRef.current.innerHTML;
     
-    // Не сохраняем если содержимое не изменилось
     if (history.length > 0 && history[historyIndex] === currentContent) {
       return;
     }
     
-    // Удаляем все состояния после текущего индекса (при новом действии)
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(currentContent);
     
-    // Ограничиваем историю 50 состояниями
     if (newHistory.length > 50) {
       newHistory.shift();
     }
@@ -138,7 +132,6 @@ function TemplateEditorContent() {
     setHistoryIndex(newHistory.length - 1);
   };
 
-  // Undo
   const undo = () => {
     if (historyIndex <= 0 || !editableDivRef.current) return;
     
@@ -151,7 +144,6 @@ function TemplateEditorContent() {
     showMessagePopup('↩️ Отменено', false);
   };
 
-  // Redo
   const redo = () => {
     if (historyIndex >= history.length - 1 || !editableDivRef.current) return;
     
@@ -441,7 +433,6 @@ function TemplateEditorContent() {
         editableDivRef.current.style.color = state.textColor;
         (editableDivRef.current.style as any).backgroundSize = "cover";
         updateStats();
-        // Инициализируем историю
         setHistory([state.content]);
         setHistoryIndex(0);
         showMessagePopup('📂 Загружен автосохранённый черновик', false);
@@ -545,29 +536,11 @@ function TemplateEditorContent() {
     }
   }, [history, historyIndex]);
 
-  const saveSelection = () => {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      savedRangeRef.current = sel.getRangeAt(0).cloneRange();
-    }
-  };
-
-  const restoreSelection = () => {
-    if (savedRangeRef.current) {
-      const sel = window.getSelection();
-      sel?.removeAllRanges();
-      sel?.addRange(savedRangeRef.current);
-      editableDivRef.current?.focus();
-    }
-  };
-
   const openLinkModal = () => {
-    saveSelection();
     setShowLinkModal(true);
   };
 
   const openImageModal = () => {
-    saveSelection();
     setShowImageModal(true);
   };
 
@@ -738,32 +711,69 @@ function TemplateEditorContent() {
     const newSize = e.target.value;
     setFontSize(newSize);
     
-    const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) {
       showMessagePopup('⚠️ Выделите текст для изменения размера', true);
       return;
     }
     
-    const selectedText = selection.toString().trim();
+    const range = sel.getRangeAt(0);
+    const selectedText = range.toString().trim();
     if (!selectedText) {
       showMessagePopup('⚠️ Выделите текст, чтобы изменить размер шрифта', true);
       return;
     }
     
-    const range = selection.getRangeAt(0);
+    const startContainer = range.startContainer;
+    const startOffset = range.startOffset;
+    const endContainer = range.endContainer;
+    const endOffset = range.endOffset;
     
     try {
-      const span = document.createElement('span');
-      span.style.fontSize = newSize;
+      document.execCommand('fontSize', false, '7');
       
-      const fragment = range.extractContents();
-      span.appendChild(fragment);
-      range.insertNode(span);
+      const fontElements = document.querySelectorAll('font[size="7"]');
+      fontElements.forEach(el => {
+        const span = document.createElement('span');
+        span.style.fontSize = newSize;
+        span.innerHTML = el.innerHTML;
+        el.parentNode?.replaceChild(span, el);
+      });
       
-      range.setStartBefore(span);
-      range.setEndAfter(span);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        const newRange = document.createRange();
+        newRange.setStart(startContainer, startOffset);
+        newRange.setEnd(endContainer, endOffset);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      } catch {
+        const walker = document.createTreeWalker(
+          editableDivRef.current!,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode: (node) => {
+              if (node.textContent?.includes(selectedText)) {
+                return NodeFilter.FILTER_ACCEPT;
+              }
+              return NodeFilter.FILTER_REJECT;
+            }
+          }
+        );
+        let node = walker.nextNode();
+        while (node) {
+          const text = node.textContent || '';
+          const index = text.indexOf(selectedText);
+          if (index !== -1) {
+            const newRange = document.createRange();
+            newRange.setStart(node, index);
+            newRange.setEnd(node, index + selectedText.length);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+            break;
+          }
+          node = walker.nextNode();
+        }
+      }
       
       editableDivRef.current?.focus();
       setTimeout(() => {
@@ -772,29 +782,11 @@ function TemplateEditorContent() {
         saveToLocalStorage();
       }, 10);
     } catch (err) {
-      try {
-        document.execCommand('fontSize', false, '7');
-        const fonts = document.querySelectorAll('font[size="7"]');
-        fonts.forEach(el => {
-          const span = document.createElement('span');
-          span.style.fontSize = newSize;
-          span.innerHTML = el.innerHTML;
-          el.parentNode?.replaceChild(span, el);
-        });
-        editableDivRef.current?.focus();
-        setTimeout(() => {
-          updateStats();
-          saveToHistory();
-          saveToLocalStorage();
-        }, 10);
-      } catch (e) {
-        showMessagePopup('❌ Не удалось изменить размер шрифта', true);
-      }
+      showMessagePopup('❌ Не удалось изменить размер шрифта', true);
     }
   };
 
   const insertAtCursor = (html: string) => {
-    restoreSelection();
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
       const range = sel.getRangeAt(0);
@@ -924,38 +916,44 @@ function TemplateEditorContent() {
       return;
     }
     
-    restoreSelection();
-    
-    const selection = window.getSelection();
-    if (selection && selection.toString().length > 0) {
-      const selectedText = selection.toString();
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      const selectedText = range.toString();
       
-      const link = document.createElement('a');
-      link.href = linkUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.textContent = selectedText;
-      link.style.color = '#6c5ce7';
-      link.style.textDecoration = 'underline';
-      
-      range.insertNode(link);
-      range.setStartAfter(link);
-      range.setEndAfter(link);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      showMessagePopup('✅ Ссылка добавлена на выделенный текст', false);
-    } else {
-      const linkHtml = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="color: #6c5ce7; text-decoration: underline;">${linkUrl}</a>&nbsp;`;
-      insertAtCursor(linkHtml);
-      showMessagePopup('✅ Ссылка вставлена', false);
+      if (selectedText.length > 0) {
+        range.deleteContents();
+        
+        const link = document.createElement('a');
+        link.href = linkUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = selectedText;
+        link.style.color = '#6c5ce7';
+        link.style.textDecoration = 'underline';
+        
+        range.insertNode(link);
+        const newRange = document.createRange();
+        newRange.setStartAfter(link);
+        newRange.setEndAfter(link);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+        
+        showMessagePopup('✅ Ссылка добавлена на выделенный текст', false);
+      } else {
+        const linkHtml = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="color: #6c5ce7; text-decoration: underline;">${linkUrl}</a>&nbsp;`;
+        range.deleteContents();
+        const fragment = range.createContextualFragment(linkHtml);
+        range.insertNode(fragment);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        showMessagePopup('✅ Ссылка вставлена', false);
+      }
     }
     
     setShowLinkModal(false);
     setLinkUrl('https://');
-    savedRangeRef.current = null;
     setTimeout(() => {
       updateStats();
       saveToHistory();
@@ -970,16 +968,13 @@ function TemplateEditorContent() {
       return;
     }
     
-    restoreSelection();
-    
-    const imgHtml = `<img src="${imageUrl}" alt="Изображение" style="max-width: 100%; border-radius: 12px; margin: 10px 0; display: block;" />`;
-    insertAtCursor(imgHtml);
+    const html = `<img src="${imageUrl}" alt="Изображение" style="max-width: 100%; border-radius: 12px; margin: 10px 0; display: block;" />`;
+    insertAtCursor(html);
     
     showMessagePopup('✅ Изображение вставлено', false);
     
     setShowImageModal(false);
     setImageUrl('https://');
-    savedRangeRef.current = null;
     setTimeout(() => {
       updateStats();
       saveToHistory();
@@ -2082,7 +2077,6 @@ function TemplateEditorContent() {
           }
         }
 
-        /* Горизонтальная ориентация на мобильных */
         @media (max-width: 900px) and (orientation: landscape) {
           .toolbar {
             max-height: 80vh;
@@ -2353,6 +2347,7 @@ function TemplateEditorContent() {
           onClick={undo} 
           disabled={historyIndex <= 0}
           title="Отменить"
+          suppressHydrationWarning
         >
           ↩️ Отменить
         </button>
@@ -2361,6 +2356,7 @@ function TemplateEditorContent() {
           onClick={redo} 
           disabled={historyIndex >= history.length - 1}
           title="Вернуть"
+          suppressHydrationWarning
         >
           ↪️ Вернуть
         </button>
