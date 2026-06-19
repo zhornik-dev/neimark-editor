@@ -724,29 +724,45 @@ function TemplateEditorContent() {
       return;
     }
     
-    const startContainer = range.startContainer;
-    const startOffset = range.startOffset;
-    const endContainer = range.endContainer;
-    const endOffset = range.endOffset;
-    
     try {
-      document.execCommand('fontSize', false, '7');
+      // Создаем span с нужным размером
+      const span = document.createElement('span');
+      span.style.fontSize = newSize;
       
-      const fontElements = document.querySelectorAll('font[size="7"]');
-      fontElements.forEach(el => {
-        const span = document.createElement('span');
-        span.style.fontSize = newSize;
-        span.innerHTML = el.innerHTML;
-        el.parentNode?.replaceChild(span, el);
-      });
+      // Извлекаем содержимое выделения
+      const fragment = range.extractContents();
+      span.appendChild(fragment);
       
+      // Вставляем span обратно в документ
+      range.insertNode(span);
+      
+      // Восстанавливаем выделение на span
+      range.setStartBefore(span);
+      range.setEndAfter(span);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      
+      editableDivRef.current?.focus();
+      setTimeout(() => {
+        updateStats();
+        saveToHistory();
+        saveToLocalStorage();
+      }, 10);
+    } catch (error) {
+      // Если не удалось обернуть в span (например, выделение пересекает границы элементов),
+      // используем execCommand как запасной вариант
       try {
-        const newRange = document.createRange();
-        newRange.setStart(startContainer, startOffset);
-        newRange.setEnd(endContainer, endOffset);
-        sel.removeAllRanges();
-        sel.addRange(newRange);
-      } catch {
+        document.execCommand('fontSize', false, '7');
+        
+        const fontElements = document.querySelectorAll('font[size="7"]');
+        fontElements.forEach(el => {
+          const span = document.createElement('span');
+          span.style.fontSize = newSize;
+          span.innerHTML = el.innerHTML;
+          el.parentNode?.replaceChild(span, el);
+        });
+        
+        // Пытаемся восстановить выделение по тексту
         const walker = document.createTreeWalker(
           editableDivRef.current!,
           NodeFilter.SHOW_TEXT,
@@ -773,16 +789,16 @@ function TemplateEditorContent() {
           }
           node = walker.nextNode();
         }
+        
+        editableDivRef.current?.focus();
+        setTimeout(() => {
+          updateStats();
+          saveToHistory();
+          saveToLocalStorage();
+        }, 10);
+      } catch (err) {
+        showMessagePopup('❌ Не удалось изменить размер шрифта. Попробуйте выделить текст заново.', true);
       }
-      
-      editableDivRef.current?.focus();
-      setTimeout(() => {
-        updateStats();
-        saveToHistory();
-        saveToLocalStorage();
-      }, 10);
-    } catch (err) {
-      showMessagePopup('❌ Не удалось изменить размер шрифта', true);
     }
   };
 
