@@ -329,11 +329,26 @@ export default function EditorPage() {
           margin-bottom: 50px;
         }
 
+        .page-header .logo-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-bottom: 8px;
+        }
+
+        .page-header .logo-icon {
+          width: 48px;
+          height: 48px;
+          flex-shrink: 0;
+        }
+
         .page-header h1 {
           font-size: clamp(2rem, 5vw, 3rem);
           font-weight: 700;
           color: #ffffff;
           letter-spacing: -0.02em;
+          margin: 0;
         }
 
         .page-header h1 .accent {
@@ -345,7 +360,7 @@ export default function EditorPage() {
 
         .page-header p {
           color: rgba(220, 230, 255, 0.5);
-          margin-top: 12px;
+          margin-top: 4px;
           font-size: 1.1rem;
         }
 
@@ -448,6 +463,7 @@ export default function EditorPage() {
           justify-content: center;
           align-items: center;
           pointer-events: auto;
+          padding: 20px;
         }
 
         .modal-content {
@@ -456,10 +472,14 @@ export default function EditorPage() {
           border-radius: 40px;
           max-width: 500px;
           width: 90%;
+          max-height: 90vh;
           padding: 30px;
           border: 1px solid rgba(255,255,255,0.15);
           text-align: center;
           animation: modalFadeIn 0.3s ease;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
         }
 
         @keyframes modalFadeIn {
@@ -487,6 +507,12 @@ export default function EditorPage() {
           border-radius: 24px;
           margin: 20px 0;
           border: 1px solid rgba(255,255,255,0.15);
+          flex-shrink: 0;
+        }
+
+        .modal-content > p {
+          color: rgba(255,255,255,0.7);
+          flex-shrink: 0;
         }
 
         .modal-actions {
@@ -494,6 +520,7 @@ export default function EditorPage() {
           gap: 15px;
           justify-content: center;
           margin-top: 20px;
+          flex-shrink: 0;
         }
 
         .modal-btn {
@@ -549,8 +576,95 @@ export default function EditorPage() {
             margin-top: 0;
             padding-top: 0;
           }
+          .page-header .logo-icon {
+            width: 36px;
+            height: 36px;
+          }
+          .page-header .logo-wrapper {
+            gap: 8px;
+          }
           .page-header h1 {
             font-size: 1.8rem;
+          }
+          .modal-content {
+            padding: 20px;
+            max-height: 85vh;
+          }
+          .modal-content h3 {
+            font-size: 1.4rem;
+          }
+          .modal-preview-img {
+            height: 120px;
+            margin: 12px 0;
+          }
+          .modal-btn {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+          }
+        }
+
+        /* Горизонтальная ориентация на мобильных устройствах */
+        @media (max-width: 900px) and (orientation: landscape) {
+          .modal {
+            padding: 10px;
+          }
+          .modal-content {
+            max-width: 600px;
+            max-height: 85vh;
+            padding: 16px 24px;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+          }
+          .modal-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0;
+            width: 100%;
+            text-align: center;
+          }
+          .modal-preview-img {
+            height: 100px;
+            width: 200px;
+            flex: 1;
+            margin: 0;
+            min-width: 150px;
+          }
+          .modal-content > p {
+            flex: 1;
+            min-width: 150px;
+            font-size: 0.85rem;
+            margin: 0;
+          }
+          .modal-actions {
+            width: 100%;
+            margin-top: 12px;
+          }
+          .modal-btn {
+            padding: 8px 24px;
+            font-size: 0.85rem;
+          }
+        }
+
+        @media (max-width: 500px) and (orientation: landscape) {
+          .modal-content {
+            padding: 12px 16px;
+            gap: 10px;
+          }
+          .modal-content h3 {
+            font-size: 1.1rem;
+          }
+          .modal-preview-img {
+            height: 70px;
+            min-width: 100px;
+          }
+          .modal-content > p {
+            font-size: 0.75rem;
+          }
+          .modal-btn {
+            padding: 6px 16px;
+            font-size: 0.75rem;
           }
         }
       `}</style>
@@ -567,9 +681,14 @@ export default function EditorPage() {
 
       <div className="container">
         <div className="page-header">
-          <h1>
-            НЕЙМАРК <span className="accent">|</span> Шедевры email-дизайна
-          </h1>
+          <div className="logo-wrapper">
+            <svg className="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" clipRule="evenodd" d="M12.1504 26.8305V11.5695H13.6692V26.8305H12.1504ZM25.8195 26.8305V11.5695H27.3382V26.8305H25.8195ZM14.6959 18.4359H24.7927V19.9641H14.6959V18.4359ZM36.4298 5.45653V8.513H39.4672V32.9435H36.4298V36H15.188V32.9435H6.07518C2.7381 32.9435 0 30.1883 0 26.8305V8.513C0 5.15515 2.7381 2.4 6.07518 2.4H27.317V5.45653H6.07518C5.2409 5.45653 4.4922 5.80088 3.93603 6.36053C3.37985 6.92018 3.03763 7.67353 3.03763 8.513V26.8305C3.03763 27.67 3.37985 28.4233 3.93603 28.983C4.4922 29.5425 5.2409 29.887 6.07518 29.887H15.188V32.9435H36.4298V8.513H27.317V5.45653H36.4298Z" fill="#FD9968"/>
+            </svg>
+            <h1>
+              НЕЙМАРК <span className="accent">|</span> Шедевры email-дизайна
+            </h1>
+          </div>
           <p>Выберите шаблон — и создайте идеальное письмо</p>
         </div>
 

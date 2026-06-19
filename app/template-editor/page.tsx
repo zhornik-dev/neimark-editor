@@ -105,6 +105,65 @@ function TemplateEditorContent() {
   const [quoteColor, setQuoteColor] = useState('#6c5ce7');
   const [dividerColor, setDividerColor] = useState('#d1d5db');
 
+  // История изменений для Undo/Redo
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [isUndoRedoAction, setIsUndoRedoAction] = useState<boolean>(false);
+
+  // Сохранение состояния в историю
+  const saveToHistory = () => {
+    if (!editableDivRef.current) return;
+    if (isUndoRedoAction) {
+      setIsUndoRedoAction(false);
+      return;
+    }
+    
+    const currentContent = editableDivRef.current.innerHTML;
+    
+    // Не сохраняем если содержимое не изменилось
+    if (history.length > 0 && history[historyIndex] === currentContent) {
+      return;
+    }
+    
+    // Удаляем все состояния после текущего индекса (при новом действии)
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(currentContent);
+    
+    // Ограничиваем историю 50 состояниями
+    if (newHistory.length > 50) {
+      newHistory.shift();
+    }
+    
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  // Undo
+  const undo = () => {
+    if (historyIndex <= 0 || !editableDivRef.current) return;
+    
+    setIsUndoRedoAction(true);
+    const newIndex = historyIndex - 1;
+    setHistoryIndex(newIndex);
+    editableDivRef.current.innerHTML = history[newIndex];
+    updateStats();
+    saveToLocalStorage();
+    showMessagePopup('↩️ Отменено', false);
+  };
+
+  // Redo
+  const redo = () => {
+    if (historyIndex >= history.length - 1 || !editableDivRef.current) return;
+    
+    setIsUndoRedoAction(true);
+    const newIndex = historyIndex + 1;
+    setHistoryIndex(newIndex);
+    editableDivRef.current.innerHTML = history[newIndex];
+    updateStats();
+    saveToLocalStorage();
+    showMessagePopup('↪️ Возвращено', false);
+  };
+
   const updateStats = () => {
     if (!editableDivRef.current) return;
     const text = editableDivRef.current.innerText || '';
@@ -382,6 +441,9 @@ function TemplateEditorContent() {
         editableDivRef.current.style.color = state.textColor;
         (editableDivRef.current.style as any).backgroundSize = "cover";
         updateStats();
+        // Инициализируем историю
+        setHistory([state.content]);
+        setHistoryIndex(0);
         showMessagePopup('📂 Загружен автосохранённый черновик', false);
         return true;
       } catch (e) {
@@ -394,19 +456,25 @@ function TemplateEditorContent() {
   const resetToOriginal = () => {
     if (isNewTemplate) {
       if (editableDivRef.current) {
-        editableDivRef.current.innerHTML = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+        const content = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+        editableDivRef.current.innerHTML = content;
         editableDivRef.current.style.background = "linear-gradient(135deg, #f5f5f5, #ffffff)";
         editableDivRef.current.style.color = "#1a1a2e";
         (editableDivRef.current.style as any).backgroundSize = "cover";
+        setHistory([content]);
+        setHistoryIndex(0);
         updateStats();
         showMessagePopup('🔄 Новый шаблон очищен', false);
       }
     } else if (originalTemplate && editableDivRef.current) {
-      editableDivRef.current.innerHTML = originalTemplate.content;
+      const content = originalTemplate.content;
+      editableDivRef.current.innerHTML = content;
       editableDivRef.current.style.background = originalTemplate.bgGradient;
       editableDivRef.current.style.color = originalTemplate.textColor;
       (editableDivRef.current.style as any).backgroundSize = "cover";
       setCurrentTemplate(originalTemplate);
+      setHistory([content]);
+      setHistoryIndex(0);
       updateStats();
       showMessagePopup(`🔄 Шаблон "${originalTemplate.name}" сброшен к исходному`, false);
     }
@@ -426,16 +494,22 @@ function TemplateEditorContent() {
     if (templateId && templatesData[templateId]) {
       const template = templatesData[templateId];
       if (editableDivRef.current) {
-        editableDivRef.current.innerHTML = template.content;
+        const content = template.content;
+        editableDivRef.current.innerHTML = content;
         editableDivRef.current.style.background = template.bgGradient;
         editableDivRef.current.style.color = template.textColor;
         (editableDivRef.current.style as any).backgroundSize = "cover";
+        setHistory([content]);
+        setHistoryIndex(0);
         updateStats();
       }
     } else if (editableDivRef.current) {
-      editableDivRef.current.innerHTML = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+      const content = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+      editableDivRef.current.innerHTML = content;
       editableDivRef.current.style.background = "linear-gradient(135deg, #f5f5f5, #ffffff)";
       editableDivRef.current.style.color = "#1a1a2e";
+      setHistory([content]);
+      setHistoryIndex(0);
       updateStats();
     }
     
@@ -456,6 +530,7 @@ function TemplateEditorContent() {
   useEffect(() => {
     const handleInput = () => {
       updateStats();
+      saveToHistory();
       saveToLocalStorage();
     };
     
@@ -468,7 +543,7 @@ function TemplateEditorContent() {
         element.removeEventListener('keyup', handleInput);
       };
     }
-  }, []);
+  }, [history, historyIndex]);
 
   const saveSelection = () => {
     const sel = window.getSelection();
@@ -595,10 +670,13 @@ function TemplateEditorContent() {
       if (editableDivRef.current) {
         const loaded = loadFromLocalStorage();
         if (!loaded) {
-          editableDivRef.current.innerHTML = template.content;
+          const content = template.content;
+          editableDivRef.current.innerHTML = content;
           editableDivRef.current.style.background = template.bgGradient;
           editableDivRef.current.style.color = template.textColor;
           (editableDivRef.current.style as any).backgroundSize = "cover";
+          setHistory([content]);
+          setHistoryIndex(0);
           updateStats();
         }
       }
@@ -608,9 +686,12 @@ function TemplateEditorContent() {
       setIsNewTemplate(true);
       const loaded = loadFromLocalStorage();
       if (!loaded) {
-        editableDivRef.current.innerHTML = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+        const content = `<h1>✏️ Новый шаблон</h1><p>Начните писать своё письмо...</p>`;
+        editableDivRef.current.innerHTML = content;
         editableDivRef.current.style.background = "linear-gradient(135deg, #f5f5f5, #ffffff)";
         editableDivRef.current.style.color = "#1a1a2e";
+        setHistory([content]);
+        setHistoryIndex(0);
         updateStats();
       }
     }
@@ -646,7 +727,11 @@ function TemplateEditorContent() {
     
     document.execCommand(command, false, value);
     editableDivRef.current?.focus();
-    setTimeout(() => updateStats(), 10);
+    setTimeout(() => {
+      updateStats();
+      saveToHistory();
+      saveToLocalStorage();
+    }, 10);
   };
 
   const handleFontSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -681,7 +766,11 @@ function TemplateEditorContent() {
       selection.addRange(range);
       
       editableDivRef.current?.focus();
-      setTimeout(() => updateStats(), 10);
+      setTimeout(() => {
+        updateStats();
+        saveToHistory();
+        saveToLocalStorage();
+      }, 10);
     } catch (err) {
       try {
         document.execCommand('fontSize', false, '7');
@@ -693,7 +782,11 @@ function TemplateEditorContent() {
           el.parentNode?.replaceChild(span, el);
         });
         editableDivRef.current?.focus();
-        setTimeout(() => updateStats(), 10);
+        setTimeout(() => {
+          updateStats();
+          saveToHistory();
+          saveToLocalStorage();
+        }, 10);
       } catch (e) {
         showMessagePopup('❌ Не удалось изменить размер шрифта', true);
       }
@@ -715,7 +808,11 @@ function TemplateEditorContent() {
       editableDivRef.current?.insertAdjacentHTML('beforeend', html);
     }
     editableDivRef.current?.focus();
-    setTimeout(() => updateStats(), 10);
+    setTimeout(() => {
+      updateStats();
+      saveToHistory();
+      saveToLocalStorage();
+    }, 10);
   };
 
   const insertSingleButton = () => {
@@ -859,7 +956,11 @@ function TemplateEditorContent() {
     setShowLinkModal(false);
     setLinkUrl('https://');
     savedRangeRef.current = null;
-    setTimeout(() => updateStats(), 10);
+    setTimeout(() => {
+      updateStats();
+      saveToHistory();
+      saveToLocalStorage();
+    }, 10);
   };
 
   const handleImageConfirm = () => {
@@ -879,7 +980,11 @@ function TemplateEditorContent() {
     setShowImageModal(false);
     setImageUrl('https://');
     savedRangeRef.current = null;
-    setTimeout(() => updateStats(), 10);
+    setTimeout(() => {
+      updateStats();
+      saveToHistory();
+      saveToLocalStorage();
+    }, 10);
   };
 
   const handleSave = () => {
@@ -1315,6 +1420,12 @@ function TemplateEditorContent() {
           color: rgba(255, 255, 255, 0.9);
         }
 
+        .tool-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+
         .tool-btn-dropdown {
           position: relative;
         }
@@ -1377,7 +1488,7 @@ function TemplateEditorContent() {
           color: rgba(255, 255, 255, 0.7);
           padding: 8px 12px;
           border-radius: 40px;
-          font-size: 0.85rem;
+          font-size: clamp(0.7rem, 2vw, 0.85rem);
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -1455,7 +1566,7 @@ function TemplateEditorContent() {
           align-items: baseline;
           gap: 8px;
           color: rgba(255, 255, 255, 0.6);
-          font-size: 0.85rem;
+          font-size: clamp(0.65rem, 2vw, 0.85rem);
         }
 
         .stat-label {
@@ -1465,7 +1576,7 @@ function TemplateEditorContent() {
 
         .stat-value {
           font-weight: 700;
-          font-size: 1.1rem;
+          font-size: clamp(0.8rem, 2.5vw, 1.1rem);
           color: #6c8cff;
         }
 
@@ -1483,7 +1594,7 @@ function TemplateEditorContent() {
           border-radius: 30px;
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.85rem;
+          font-size: clamp(0.7rem, 2vw, 0.85rem);
           transition: all 0.2s;
           background: rgba(255, 255, 255, 0.06);
           border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1529,7 +1640,7 @@ function TemplateEditorContent() {
           padding: 40px;
           min-height: 500px;
           outline: none;
-          font-size: 16px;
+          font-size: clamp(14px, 2.5vw, 16px);
           line-height: 1.5;
           transition: all 0.3s ease;
           background: rgba(255, 255, 255, 0.05);
@@ -1623,7 +1734,7 @@ function TemplateEditorContent() {
           margin: 16px 0;
           color: rgba(255,255,255,0.8);
           font-style: italic;
-          font-size: 1.1rem;
+          font-size: clamp(0.9rem, 2.5vw, 1.1rem);
           line-height: 1.6;
         }
         .editable-content .features-container {
@@ -1634,7 +1745,7 @@ function TemplateEditorContent() {
           border-radius: 8px;
         }
         .editable-content .features-heading {
-          font-size: 24px;
+          font-size: clamp(1.2rem, 4vw, 24px);
           line-height: 32px;
           margin-bottom: 42px;
           text-align: center;
@@ -1667,14 +1778,14 @@ function TemplateEditorContent() {
           flex: 1;
         }
         .editable-content .feature-title {
-          font-size: 18px;
+          font-size: clamp(0.9rem, 3vw, 18px);
           line-height: 28px;
           margin-bottom: 8px;
           margin-top: 0;
           color: #1a1a2e;
         }
         .editable-content .feature-description {
-          font-size: 14px;
+          font-size: clamp(0.7rem, 2vw, 14px);
           line-height: 24px;
           margin: 0;
           color: #6b7280;
@@ -1691,7 +1802,7 @@ function TemplateEditorContent() {
 
         .template-info-card p {
           color: rgba(220, 230, 255, 0.5);
-          font-size: 0.85rem;
+          font-size: clamp(0.7rem, 2vw, 0.85rem);
         }
 
         .badge {
@@ -1715,7 +1826,7 @@ function TemplateEditorContent() {
           padding: 12px 24px;
           border-radius: 50px;
           z-index: 1000;
-          font-size: 0.9rem;
+          font-size: clamp(0.8rem, 2vw, 0.9rem);
           animation: fadeInOut 2.5s ease forwards;
           pointer-events: none;
         }
@@ -1841,7 +1952,7 @@ function TemplateEditorContent() {
           
           .nav-btn {
             padding: 6px 14px;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
           }
           
           .toolbar {
@@ -1858,8 +1969,10 @@ function TemplateEditorContent() {
             padding: 12px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             flex-wrap: wrap;
-            max-height: 40vh;
+            max-height: 60vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
           }
           
           .toggle-tools-btn {
@@ -1873,17 +1986,18 @@ function TemplateEditorContent() {
             border: 1px solid rgba(108, 92, 231, 0.3);
             color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-size: clamp(0.65rem, 2vw, 0.8rem);
           }
           
           .tool-btn {
             padding: 5px 10px;
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
             min-width: 32px;
           }
           
           .tool-select {
             padding: 5px 8px;
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
             max-width: 80px;
           }
           
@@ -1917,7 +2031,7 @@ function TemplateEditorContent() {
             width: 100%;
             text-align: center;
             padding: 8px;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
           }
           
           .stats-bar {
@@ -1929,11 +2043,11 @@ function TemplateEditorContent() {
           }
           
           .stat-item {
-            font-size: 0.75rem;
+            font-size: clamp(0.6rem, 2vw, 0.75rem);
           }
           
           .stat-value {
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
           }
           
           .template-info-card {
@@ -1942,7 +2056,7 @@ function TemplateEditorContent() {
           }
           
           .template-info-card p {
-            font-size: 0.75rem;
+            font-size: clamp(0.6rem, 2vw, 0.75rem);
           }
           
           .badge {
@@ -1958,6 +2072,48 @@ function TemplateEditorContent() {
             top: auto;
             max-height: 50vh;
             min-width: auto;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .dropdown-menu-item {
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            padding: 8px 12px;
+          }
+        }
+
+        /* Горизонтальная ориентация на мобильных */
+        @media (max-width: 900px) and (orientation: landscape) {
+          .toolbar {
+            max-height: 80vh;
+            padding: 8px 12px 16px;
+            gap: 4px;
+          }
+          .tool-btn {
+            padding: 4px 8px;
+            font-size: 0.65rem;
+            min-width: 28px;
+          }
+          .tool-select {
+            padding: 4px 6px;
+            font-size: 0.65rem;
+            max-width: 60px;
+          }
+          .color-input {
+            width: 24px;
+            height: 24px;
+          }
+          .separator {
+            height: 16px;
+            margin: 0 2px;
+          }
+          .dropdown-menu {
+            max-height: 60vh;
+            bottom: 60px;
+          }
+          .dropdown-menu-item {
+            font-size: 0.7rem;
+            padding: 6px 10px;
           }
         }
       `}</style>
@@ -2192,8 +2348,22 @@ function TemplateEditorContent() {
         
         <div className="separator"></div>
         
-        <button className="tool-btn" onClick={() => execCommand('undo')} title="Отменить">↩️</button>
-        <button className="tool-btn" onClick={() => execCommand('redo')} title="Вернуть">↪️</button>
+        <button 
+          className="tool-btn" 
+          onClick={undo} 
+          disabled={historyIndex <= 0}
+          title="Отменить"
+        >
+          ↩️ Отменить
+        </button>
+        <button 
+          className="tool-btn" 
+          onClick={redo} 
+          disabled={historyIndex >= history.length - 1}
+          title="Вернуть"
+        >
+          ↪️ Вернуть
+        </button>
       </div>
 
       <div className="container">

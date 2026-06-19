@@ -51,14 +51,12 @@ export default function Home() {
         const duration = Math.random() * 12 + 8;
         const delay = Math.random() * 15;
         particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-        // Меняем цвета частиц на сине-фиолетовые (вместо радужных)
-        const hue = Math.random() * 40 + 220; // 220-260 (сине-фиолетовый диапазон)
+        const hue = Math.random() * 40 + 220;
         particle.style.background = `radial-gradient(circle, rgba(${hue-20},${hue-80},255,0.3) 0%, rgba(${hue-10},${hue-50},200,0.1) 70%, transparent 100%)`;
         particlesContainer.appendChild(particle);
       }
     }
 
-    // Мышь интеракшн (градиент следует за курсором)
     const handleMouseMove = (e: MouseEvent) => {
       if (!gradientRef.current) return;
       const x = (e.clientX / window.innerWidth) * 100;
@@ -77,7 +75,6 @@ export default function Home() {
 
     document.addEventListener('mousemove', handleMouseMove);
     
-    // Рипл эффект при клике (белый с синим свечением)
     const handleClick = (e: MouseEvent) => {
       const ripple = document.createElement('div');
       ripple.style.position = 'fixed';
@@ -111,7 +108,6 @@ export default function Home() {
     };
   }, []);
 
-  // Ресайз
   useEffect(() => {
     const handleResize = () => {
       const container = particlesRef.current;
@@ -261,12 +257,26 @@ export default function Home() {
           pointer-events: none;
         }
 
+        .hero-title .logo-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        }
+
+        .hero-title .logo-icon {
+          width: 48px;
+          height: 48px;
+          flex-shrink: 0;
+        }
+
         .hero-title h1 {
-          font-size: clamp(1.8rem, 6vw, 3.8rem);
+          font-size: clamp(2rem, 5vw, 3rem);
           font-weight: 700;
           color: #ffffff;
           letter-spacing: -0.02em;
           text-shadow: 0 0 60px rgba(100, 150, 255, 0.15);
+          margin: 0;
         }
 
         .hero-title h1 .accent {
@@ -528,6 +538,15 @@ export default function Home() {
           .hero-title {
             padding-top: 4vh;
           }
+          .hero-title .logo-wrapper {
+            gap: 8px;
+            padding-left: 12px;
+          }
+          .hero-title .logo-icon {
+            width: 36px;
+            height: 36px;
+            margin-left: 8px;
+          }
           .steps-container {
             margin: 20px auto 15px;
           }
@@ -571,6 +590,53 @@ export default function Home() {
             font-size: 0.9rem;
           }
         }
+
+        /* Горизонтальная ориентация на мобильных устройствах */
+        @media (max-width: 900px) and (orientation: landscape) {
+          .hero-title .logo-wrapper {
+            padding-left: 16px;
+          }
+          .hero-title .logo-icon {
+            margin-left: 10px;
+            width: 32px;
+            height: 32px;
+          }
+          .hero-title h1 {
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+          }
+          .hero-title {
+            padding-top: 2vh;
+          }
+          .steps-container {
+            margin: 15px auto 10px;
+          }
+          .steps-grid {
+            flex-direction: row;
+            gap: 10px;
+          }
+          .step-item {
+            padding: 10px 12px;
+            min-width: 120px;
+          }
+          .step-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+          }
+          .step-title {
+            font-size: 0.9rem;
+          }
+          .step-desc {
+            font-size: 0.7rem;
+          }
+          .button-container {
+            margin-top: 10px;
+            margin-bottom: 15px;
+          }
+          .create-btn {
+            padding: 10px 28px;
+            font-size: 0.9rem;
+          }
+        }
       `}</style>
 
       <div ref={gradientRef} className="sky-gradient"></div>
@@ -579,9 +645,14 @@ export default function Home() {
       <div className="glow-overlay"></div>
 
       <div className="hero-title">
-        <h1>
-          НЕЙМАРК <span className="accent">|</span> Бесплатный конструктор email-шаблонов
-        </h1>
+        <div className="logo-wrapper">
+          <svg className="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" clipRule="evenodd" d="M12.1504 26.8305V11.5695H13.6692V26.8305H12.1504ZM25.8195 26.8305V11.5695H27.3382V26.8305H25.8195ZM14.6959 18.4359H24.7927V19.9641H14.6959V18.4359ZM36.4298 5.45653V8.513H39.4672V32.9435H36.4298V36H15.188V32.9435H6.07518C2.7381 32.9435 0 30.1883 0 26.8305V8.513C0 5.15515 2.7381 2.4 6.07518 2.4H27.317V5.45653H6.07518C5.2409 5.45653 4.4922 5.80088 3.93603 6.36053C3.37985 6.92018 3.03763 7.67353 3.03763 8.513V26.8305C3.03763 27.67 3.37985 28.4233 3.93603 28.983C4.4922 29.5425 5.2409 29.887 6.07518 29.887H15.188V32.9435H36.4298V8.513H27.317V5.45653H36.4298Z" fill="#FD9968"/>
+          </svg>
+          <h1>
+            НЕЙМАРК <span className="accent">|</span> Бесплатный конструктор email-шаблонов
+          </h1>
+        </div>
         <div className="hero-sub">Создавайте письма, которые запоминаются</div>
       </div>
 
